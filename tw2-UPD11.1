@@ -1,0 +1,4356 @@
+settings
+{
+	main
+	{
+		Description: "<FG8F00FFFG>Tinderwatch 2 - Update 11.1 - 21/01/2024\r\n\r\nWorkshop page: workshop.codes/TM2QB\r\n\r\nBased on a old Tinderwatch / Loverwatch\r\nmode made by ALonelyTaco.\r\nDeveloped by Siegreich.\r\n\r\nYou can change settings like time, age\r\nminimum and further going to:\r\nSettings --> Workshop Settings.\r\n\r\nRemember to have fun!"
+		Mode Name: "Tinderwatch 2 Reborn"
+	}
+
+	lobby
+	{
+		Allow Players Who Are In Queue: Yes
+		Data Center Preference: USA - Central
+		Map Rotation: After A Game
+		Match Voice Chat: Enabled
+		Max Spectators: 12
+		Max Team 1 Players: 6
+		Max Team 2 Players: 6
+		Return To Lobby: Never
+	}
+
+	modes
+	{
+		Assault
+
+		Capture the Flag
+		{
+			Flag Dropped Lock Time: 5.0
+			Flag Return Time: 4.0
+			Flag Score Respawn Time: 15.0
+		}
+
+		Control
+
+		Deathmatch
+		{
+			Game Length In Minutes: 15
+			Score To Win: 250
+			Self Initiated Respawn: Off
+		}
+
+		Escort
+
+		Flashpoint
+
+		Hybrid
+
+		disabled Practice Range
+		{
+			Spawn Training Bots: Off
+			Training Partner: Off
+		}
+
+		Push
+
+		Skirmish
+
+		General
+		{
+			Game Mode Start: Manual
+			Hero Limit: Off
+		}
+	}
+
+	heroes
+	{
+		General
+		{
+			Ultimate Generation: 200%
+			Ultimate Generation - Combat: 200%
+			Ultimate Generation - Passive: 200%
+
+			Ramattra
+			{
+				Ultimate Duration: 350%
+			}
+		}
+	}
+
+	workshop
+	{
+		Distance: 4.000
+		NoClip speed: 0.500
+	}
+}
+
+variables
+{
+	global:
+		1: Genders
+		2: Titles
+		3: Traits
+		4: CameraPositions
+		6: LookAtPositions
+		7: Sexualities
+		8: Statuses
+		9: MeasureListD
+		26: Rainbow_Color
+		27: AdminSelections
+		28: CrazyTitle
+		29: BaseLine
+		30: DataControl
+		31: Players_Global_Array
+		32: Titles_And_Outlines
+		33: Time
+		34: Each_Player_Array
+		37: Red
+		38: Green
+		39: Blue
+		52: MeasureSystemAlpha
+		53: TitleNameA
+		54: Pronoun
+		58: MeasureSystemA
+		59: MeasureSystemB
+		61: MeasureSystemC
+		65: AntiCrash
+		66: TitlesList
+		67: LookingFors
+
+	player:
+		1: Moderator
+		2: Title
+		6: AttemptedToMatchWith
+		7: Sexuality
+		8: Age
+		9: InAMenu
+		10: MenuType
+		11: ProfileCompleteBool
+		12: M_Is_Crouching
+		13: MenuInWorldTexts
+		14: MenuCursorIndex
+		15: CursorMax
+		16: TEMPindex
+		17: ModToggle
+		18: Status
+		19: PotentialMatches
+		20: WantsToSeeGenders
+		21: ViewingMatch
+		26: GravGunVariables
+		27: WorkshopConfig
+		28: HostTextMenues
+		29: Effect
+		30: MatchedWith
+		31: MatchedWithHUD
+		32: TEMPremovingPlayerIndex
+		33: BoolIsReevaluation
+		34: noClipFlags
+		35: Player
+		36: Player_Title_And_Outline
+		37: GivenTitle
+		38: Offset_Woo
+		39: ExtraSpecialChild
+		40: ScrollBackground
+		41: LinearStage
+		42: LIneTargetPos
+		43: MakingProfileSparkles
+		44: Safe
+		45: AB
+		46: HeroChangePos
+		47: ChangingHero
+		49: Banning
+		50: BanProgress
+		51: MenuMake
+		52: Pronouns
+		53: Mute
+		54: TargetPlayer
+		57: SmallProfile
+		58: LookingFor
+		62: AdminSelection
+		72: Player_Modification
+		73: Scale_Prev
+		74: Scale_Real
+		76: Progress_Lock
+		77: Progress_Stop
+		78: Signal
+		127: _NoClip
+}
+
+subroutines
+{
+	0: CleanseLastMenu
+	2: NextMatch
+	3: BuildTraitStrings
+	5: EvaluateButtons
+	6: Scale_Progress
+	8: GravPick
+	9: Give_Custom_Nameplate
+}
+
+rule("Tinderwatch 2 / Developed by Siegreich / V2.0 / Workshop Code: DBY0Q / Workshop Page: https://workshop.codes/DBY0Q")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Disable Inspector Recording;
+	}
+}
+
+rule("If you're going to copy the code, at least give credit. I don't break my back for hours so you can just steal it.")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+disabled rule("» [Timers / Cameras] «")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("End Match Timer")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Global.Time = Workshop Setting Real(Custom String("Tinderwatch 2 Time Match"), Custom String(
+			"Match Time (3600seg = 1hour / Max time is 3600 = 1hour)"), 3600, 60, 3600, 0);
+		Wait(Global.Time, Ignore Condition);
+		Declare Player Victory(Randomized Array(All Players(All Teams)));
+		Wait(3, Ignore Condition);
+		Restart Match;
+	}
+}
+
+rule("Camera Switch 1")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.AB == Absolute Value(1);
+	}
+
+	actions
+	{
+		Start Camera(Event Player, Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player) + World Vector Of(Vector(
+			0.650, 0.500, 0), Event Player, Rotation) + Up * 0.100 + Facing Direction Of(Event Player) * -1.500, Null, Null, True),
+			Event Player + Facing Direction Of(Event Player) * 1000, 15);
+	}
+}
+
+rule("Camera Switch 2")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.AB == Absolute Value(2);
+	}
+
+	actions
+	{
+		Start Camera(Event Player, Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player) + Facing Direction Of(
+			Event Player) * Event Player.AB, Null, Null, True), Eye Position(Event Player), 15);
+	}
+}
+
+rule("Camera Switch 3 (PVP Camera)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.AB == Absolute Value(3);
+	}
+
+	actions
+	{
+		Start Camera(Event Player, Ray Cast Hit Position(World Vector Of(Vector(0, 1.600, -0.300), Event Player, Rotation And Translation),
+			World Vector Of(Vector(0, 2, -1), Event Player, Rotation And Translation) + Facing Direction Of(Event Player) * -0.750, Null,
+			Event Player, False), Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player) + Facing Direction Of(
+			Event Player) * 30, All Players(Opposite Team Of(Team Of(Event Player))), Event Player, True), 20);
+		If(Event Player.AB != 3);
+			Stop Camera(Event Player);
+	}
+}
+
+rule("Camera Add")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Reload)) == True;
+		Event Player.InAMenu == 0;
+		Vertical Facing Angle Of(Event Player) > 80;
+	}
+
+	actions
+	{
+		Event Player.AB += 1;
+		Wait(0.250, Ignore Condition);
+	}
+}
+
+rule("Camera Loop")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.AB > Absolute Value(3);
+	}
+
+	actions
+	{
+		Event Player.AB = 0;
+	}
+}
+
+rule("Camera Shut Down")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.AB == Absolute Value(0);
+	}
+
+	actions
+	{
+		Stop Camera(Event Player);
+	}
+}
+
+disabled rule("» [INITIALIZE] «")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("[INITIALIZE] Base Value")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player) == Current Array Element) || Is True For Any(
+			Global.MeasureSystemAlpha, Custom String("{0}", Event Player) == Current Array Element)) == True;
+	}
+
+	actions
+	{
+		Event Player.HostTextMenues = 5;
+	}
+}
+
+rule("[INITIALIZE] Base Value 2")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	actions
+	{
+		Wait(0.250, Ignore Condition);
+		Event Player.noClipFlags[0] = True;
+	}
+}
+
+rule("[INITIALIZE] Global System")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Chase Global Variable At Rate(Time, 0, 1, Destination and Rate);
+		Create HUD Text(Filtered Array(All Players(All Teams), Current Array Element.InAMenu == 0 && Current Array Element.Safe != 2),
+			Null, Custom String("Change Camera [Look {1} + Press {2}]", Null, Icon String(Arrow: Down), Input Binding String(Button(
+			Reload))), Null, Left, 1.200, Color(Blue), Custom Color(255, 105, 180, 255), Color(Blue), Visible To and String,
+			Visible Never);
+		Create HUD Text(Filtered Array(All Players(All Teams), Current Array Element.InAMenu == 0 && Current Array Element.Safe == 1),
+			Null, Custom String("{0} PvP Mode [Hold {1}]", Icon String(Skull), Input Binding String(Button(Reload))), Null, Left, 3, Color(
+			Green), Color(Green), Color(Green), Visible To and String, Visible Never);
+		Create HUD Text(Filtered Array(All Players(All Teams), Current Array Element.InAMenu == 0 && Current Array Element.Safe == 0),
+			Null, Custom String("{0} Passive Mode [Hold {1}]", Ability Icon String(Hero(Baptiste), Button(Ability 2)),
+			Input Binding String(Button(Reload))), Null, Left, 3, Color(Red), Color(Red), Color(Red), Visible To and String,
+			Visible Never);
+		Create HUD Text(Filtered Array(All Players(All Teams), Current Array Element.InAMenu == 0), Null, Custom String(
+			"Size Menu [Hold {0} + {1}]", Input Binding String(Button(Melee)), Input Binding String(Button(Primary Fire))), Null, Left, 1,
+			Color(Rose), Custom Color(255, 192, 203, 255), Color(Rose), Visible To and String, Visible Never);
+		Create HUD Text(Filtered Array(All Players(All Teams), Current Array Element.InAMenu == 0), Null, Custom String(
+			"Change Hero [Hold {1} on safe mode]", Icon String(Arrow: Up), Input Binding String(Button(Melee))), Null, Left, 1.100, Color(
+			Rose), Custom Color(255, 176, 160, 255), Color(Rose), Visible To and String, Visible Never);
+	}
+}
+
+rule("[INITIALIZE] Info System")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Set Objective Description(All Players(All Teams), Custom String("Tinderwatch 2 Match Time Left: {2}{0}:{1}",
+			Global.Time < 3600 ? Round To Integer(Global.Time / 60, Down) : (Global.Time % 3600 / 60 >= 10 ? Round To Integer(
+			Global.Time % 3600 / 60, Down) : Custom String("0{0}", Round To Integer(Global.Time % 3600 / 60, Down))),
+			Global.Time % 60 >= 10 ? Round To Integer(Global.Time % 60, Down) : Custom String("0{0}", Round To Integer(Global.Time % 60,
+			Down)), Global.Time >= 3600 ? Custom String("{0}:", Round To Integer(Global.Time / 3600, Down)) : Custom String("")),
+			Visible To and String);
+	}
+}
+
+rule("[INITIALIZE] Variables Data")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Wait(0.050, Ignore Condition);
+		"Looking For"
+		Global.LookingFors = Array(Custom String("Friends"), Custom String("a Partner"), Custom String("People to chat with"),
+			Custom String("a Duo"), Custom String("Contemplating my existence"), Custom String("Other"));
+		"Genders"
+		Global.Genders = Array(Custom String(" ? "), Custom String("Male"), Custom String("Female"), Custom String("Other"));
+		"Pronouns"
+		Global.Pronoun = Array(Custom String("Other"), Custom String("he/him"), Custom String("she/her"), Custom String("he/they"),
+			Custom String("she/they"), Custom String("they/them"), Custom String("Neopronouns"), Custom String("Ask me my pronouns"),
+			Custom String("All Pronouns"));
+		"Titles"
+		Global.Titles = Array(Custom String(" ? "), Custom String("No Title"), Custom String("Skittles Squad{0}", Global.BaseLine),
+			Custom String("Simp{0}", Global.BaseLine), Custom String("Perma Bottom{0}", Global.BaseLine), Custom String("Spider-Man{0}",
+			Global.BaseLine), Custom String("Spider-Woman{0}", Global.BaseLine), Custom String("Batman{0}", Global.BaseLine),
+			Custom String("Friendly{0}", Global.BaseLine), Custom String("Rizzler{0}", Global.BaseLine), Custom String("Thug Shaker{0}",
+			Global.BaseLine), Custom String("Dommy Mommy{0}", Global.BaseLine), Custom String("Crewmate{0}", Global.BaseLine),
+			Custom String("Impostor{0}", Global.BaseLine), Custom String("Malewife{0}", Global.BaseLine), Custom String("Venom{0}",
+			Global.BaseLine), Custom String("Cupid{0}", Global.BaseLine), Custom String("Frog Enjoyer{0}", Global.BaseLine), Custom String(
+			"Pride{0}", Global.BaseLine), Custom String("Discord Mod{0}", Global.BaseLine), Custom String("Bunny{0}", Global.BaseLine),
+			Custom String("Diversified{0}", Global.BaseLine), Custom String("Hopeless Romantic{0}", Global.BaseLine), Custom String(
+			"Mistress of Muscle{0}", Global.BaseLine), Custom String("Girlboss{0}", Global.BaseLine), Custom String("Happy{0}",
+			Global.BaseLine), Custom String("Autistic{0}", Global.BaseLine), Custom String("Drunk{0}", Global.BaseLine), Custom String(
+			"Streamer{0}", Global.BaseLine), Custom String("Joker{0}", Global.BaseLine), Custom String("Lazy{0}", Global.BaseLine),
+			Custom String("Demon{0}", Global.BaseLine), Custom String("Sucubus{0}", Global.BaseLine), Custom String("Knight{0}",
+			Global.BaseLine), Custom String("Wizard{0}", Global.BaseLine), Custom String("Medic{0}", Global.BaseLine), Custom String(
+			"Otaku{0}", Global.BaseLine), Custom String("Asylum Escapee{0}", Global.BaseLine), Custom String("McDonalds Enjoyer{0}",
+			Global.BaseLine), Custom String("His Goddess{0}", Global.BaseLine), Custom String("Her Worshiper{0}", Global.BaseLine),
+			Custom String("Ace{0}", Global.BaseLine), Custom String("Cupcake{0}", Global.BaseLine), Custom String("Enderman{0}",
+			Global.BaseLine), Custom String("Fun-Size{0}", Global.BaseLine), Custom String("Party-Size{0}", Global.BaseLine),
+			Custom String("Slayer{0}", Global.BaseLine), Custom String("Stinky{0}", Global.BaseLine), Custom String("His Mercy ♥{0}",
+			Global.BaseLine), Custom String("Her Genji ♥{0}", Global.BaseLine), Custom String("Headpat Distributer{0}", Global.BaseLine),
+			Custom String("Headpat Enjoyer{0}", Global.BaseLine), Custom String("Mentally Insane{0}", Global.BaseLine), Custom String(
+			"Looking 4 Mommies{0}", Global.BaseLine), Custom String("Looking 4 Femboys{0}", Global.BaseLine), Custom String("UwU{0}",
+			Global.BaseLine), Custom String("OwO{0}", Global.BaseLine), Custom String("Nuh Uh{0}", Global.BaseLine), Custom String(
+			"The Guy{0}", Global.BaseLine), Custom String("Hot-Stuff{0}", Global.BaseLine), Custom String("I'm with Stupid{0}",
+			Global.BaseLine), Custom String("I'm stupid{0}", Global.BaseLine), Custom String("Bonk{0}", Global.BaseLine), Custom String(
+			"TF2 Enjoyer{0}", Global.BaseLine), Custom String("Tarot Card Reader{0}", Global.BaseLine), Custom String(
+			"Stressed & Depressed{0}", Global.BaseLine), Custom String("Knockback at it's finest{0}", Global.BaseLine), Custom String(
+			"Barbie{0}", Global.BaseLine), Custom String("Ken{0}", Global.BaseLine));
+		"Sexualities"
+		Global.Sexualities = Array(Custom String(" ? "), Custom String("Men"), Custom String("Women"), Custom String("Men and Women"),
+			Custom String("Puzees"), Custom String("All Genders"));
+		"Statuses"
+		Global.Statuses = Array(Custom String(" ? "), Custom String("Single"), Custom String("Taken"), Custom String("Open Relationship"),
+			Custom String("It's complicated"), Custom String("Married"), Custom String("Engaged"), Custom String("Divorced"),
+			Custom String("Not interested"));
+		"SAB"
+		Global.MeasureSystemA = Array(Custom String("Okami39"), Custom String("Tonks"), Custom String("Lililah"), Custom String(
+			"notanimegirl"), Custom String("Konadere"), Custom String("iipastel"), Custom String("puzeeater"), Custom String("Cosmic"),
+			Custom String("Blxe"), Custom String("EverrMoree"), Custom String("Amxthyst"), Custom String("ÄGóòdGïrł"), Custom String(
+			"GoodGirl"));
+		"IAS"
+		Global.MeasureSystemB = Array(Custom String("Siegreich"), Custom String("Okami39"), Custom String("winseq"), Custom String("kris"),
+			Custom String("Lililah"), Custom String("Tonks"), Custom String("notanimegirl"), Custom String("Konadere"), Custom String(
+			"iipastel"), Custom String("ÄGóòdGïrł"), Custom String("Blxe"), Custom String("Amxthyst"), Custom String("GoodGirl"),
+			Custom String("puzeeater"), Custom String("niya"));
+		"SVC"
+		Global.MeasureSystemC = Array(Custom String("winseq"), Custom String("Okami39"), Custom String("Siegreich"), Custom String(
+			"puzeeater"), Custom String("kris"), Custom String("Lililah"), Custom String("iipastel"), Custom String("notanimegirl"),
+			Custom String("Cosmic"), Custom String("Blxe"), Custom String("EverrMoree"), Custom String("Amxthyst"), Custom String(
+			"GoodGirl"), Custom String("ÄGóòdGïrł"), Custom String("Tonks"), Custom String("Konadere"), Custom String("Emerxld"),
+			Custom String("Txpaz"), Custom String("Profanity"), Custom String("niya"));
+		"SAC"
+		Global.MeasureSystemAlpha = Array(Custom String("Siegreich"), Custom String("winseq"), Custom String("kris"), Custom String(
+			"puzeeater"), Custom String("Txpaz"), Custom String("Blxe"), Custom String("Amxthyst"), Custom String("Diamxnd"),
+			Custom String("Emerxld"), Custom String("Lethe"), Custom String("Profanity"), Custom String("niya"));
+		"Options"
+		Global.AdminSelections = Array(Custom String("Teleport Player"), Custom String("Force Safe/PVP"), Custom String("Mute/Unmute"),
+			Custom String("Kick"), Custom String("Ban"), Custom String("Send Love OwO"), Custom String("Send To Brazil"), Custom String(
+			"Send To Backrooms"), Custom String("Gravity Gun"), Custom String("Attach Player"));
+		"Options Control"
+		Global.DataControl = Array(Custom String(
+			"Hold CROUCH + ULTIMATE to teleport the target, CROUCH + RELOAD to teleport to the target."), Custom String(
+			"THIS FEATURE IS DISABLED."), Custom String("Hold CROUCH + ULTIMATE on a player to toggle MUTE/UNMUTE."), Custom String(
+			"Hold CROUCH + ULTIMATE on a player to kick."), Custom String("Hold CROUCH + ULTIMATE on a player to ban."), Custom String(
+			"Press CROUCH + ULTIMATE on a player to send love owo."), Custom String(
+			"Hold CROUCH + ULTMATE on a player to send to brazil."), Custom String(
+			"Hold CROUCH + ULTMATE on a player to send to the backrooms."), Custom String(
+			"Press CROUCH + ULTIMATE on a player to catch it, secondary fires launch it, reload drop it."), Custom String(
+			"Press CROUCH + ULTIMATE on a target to attach, press MELEE to Attach yourself to the target, reload to detach."));
+	}
+}
+
+rule("[INITIALIZE] MeasureListD")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Global.MeasureListD = Empty Array;
+		If(Workshop Setting Toggle(Custom String("Perma-Ban List"), Custom String("Enable Perma-Ban List (+25 players banned)"), True, 0)
+			== True);
+			Modify Global Variable(MeasureListD, Append To Array, Custom String(
+				"The people who is banned here is thanks to behaviors, photos, or videos that shows what they are doing in the servers."));
+			Global.MeasureListD = Array(Custom String("Lâvełiz"), Custom String("Boot"), Custom String("mHim"), Custom String("Goodnight"),
+				Custom String("Sw3aty"), Custom String("Jasper"), Custom String("Canonsimon"), Custom String("APPMANN"), Custom String(
+				"NicoBellic94"), Custom String("DJBASTION"), Custom String("JG04810"), Custom String("Bits"), Custom String("licht"),
+				Custom String("suigetsu"), Custom String("pepppppppa"), Custom String("monkee"), Custom String("Mellifluous"), Custom String(
+				"Complexity"), Custom String("MÉRÇÏMÄÏN"), Custom String("Armanius"), Custom String("CyanGhost"), Custom String("CrashTracy"),
+				Custom String("Megan"), Custom String("WildPants"), Custom String("Win"), Custom String("tren"), Custom String("Mister147"),
+				Custom String("Revyn"), Custom String("Oliverclosof"), Custom String("bullfrog"), Custom String("그린라이트"), Custom String(
+				"noducksgiven"), Custom String("FlameYeti"), Custom String("ZdzisławBeks"), Custom String("BOMBOY"), Custom String(
+				"dobarčovjek"), Custom String("Midnight"), Custom String("bonnie"), Custom String("Bundylachos"), Custom String("Tiffuhhhh"),
+				Custom String("Babe"), Custom String("rakan"), Custom String("GR00MER"), Custom String("GRØØMED"), Custom String("Øwl"),
+				Custom String("Øwlie"), Custom String("KÁŞHI"), Custom String("Øwix"), Custom String("InkyCrane"), Custom String("ĸIWI!"),
+				Custom String("ƆUMƆUTIƐS!"), Custom String("YOURSELF"), Custom String("KILL"), Custom String("Battlecat"), Custom String(
+				"iluvm1ners"), Custom String("ÉDP445"), Custom String("UhOhStinky"), Custom String("CONTAMINAGOR"), Custom String("Hunter"),
+				Custom String("PASTOR"), Custom String("Pastor"), Custom String("AlterGirl"), Custom String("Her21YrOld"), Custom String(
+				"His16YrOld"), Custom String("BrownRaven"), Custom String("MauveBat"), Custom String("GoblinSexual"), Custom String(
+				"Reptiles246"), Custom String("ChodyJohnson"), Custom String("MightyOwl"), Custom String("MjK3ll"), Custom String(
+				"ActiveShootr"), Custom String("UvaldeVictim"), Custom String("ƔƔƔƔ"), Custom String("DeadlyFeet"), Custom String(
+				"TheLegendMan"), Custom String("MǮŖƆyŦȂMǮŖ"), Custom String("ǁǁǁǁǁǁǁǁ"), Custom String("HƐrǂPǾƆĸƐŦ"), Custom String(
+				"MrFriendly"), Custom String("MrWorm"), Custom String("IgorToe"), Custom String("HungSolo"), Custom String("nijeturčin"),
+				Custom String("BigMan"), Custom String("GodlyBearYT"), Custom String("kissmyanuz"), Custom String("fushigi"), Custom String(
+				"Shaqdaddy"), Custom String("ConfusedFish"), Custom String("vvixy"), Custom String("Lilyycedeno"), Custom String(
+				"ToddTheToad"), Custom String("karp"), Custom String("infntanihltr"), Custom String("Counterparts"), Custom String(
+				"mrhexagon"), Custom String("FamousDex"), Custom String("RockaPhett"), Custom String("alfredo"), Custom String("AppleJuice"),
+				Custom String("Turtwig"), Custom String("Jerri"), Custom String("MadLadz"), Custom String("girlnut"), Custom String(
+				"Vaðlaheiðar"), Custom String("Strawberry"), Custom String("siegrich"), Custom String("Vmbo"), Custom String("Mug"),
+				Custom String("Jamerss"), Custom String("Zeido"), Custom String("Wypher"), Custom String("Player"), Custom String("Antihero"),
+				Custom String("XPokesterX"), Custom String("Valentine"), Custom String("IwantToDie77"), Custom String("ARC"), Custom String(
+				"Ruxby"), Custom String("Arthur"), Custom String("Kraniumator"), Custom String("Drakefan"), Custom String("ZOOMTHETHIRD"),
+				Custom String("expectWRLD"), Custom String("BeefStewGod"), Custom String("Shirohige"), Custom String("EmperorZurg"),
+				Custom String("Owl"), Custom String("SaiPai"), Custom String("IslandGirl"), Custom String("JeffyEpstèin"), Custom String(
+				"Cornpopster"), Custom String("seventeen"), Custom String("rakan"), Custom String("lumi"), Custom String("CallMeFloopa"),
+				Custom String("Body"), Custom String("BigtoeSexual"), Custom String("GoblinSexual"), Custom String("RabbitSexual"),
+				Custom String("MinorSexual"), Custom String("Infinite"), Custom String("Sulfuras"), Custom String("GoldSeal"), Custom String(
+				"CUBESTON"), Custom String("CorrosionX"), Custom String("BattleRose"), Custom String("SexyEggYolk"), Custom String("Jxs"),
+				Custom String("H4tephags"), Custom String("s0ftsph3re"), Custom String("kencarson"), Custom String("HerCarry"), Custom String(
+				"Kurby"), Custom String("Captain"), Custom String("siegrich"), Custom String("GoldenFreddy"), Custom String("FTPiL"),
+				Custom String("ｄａｄｄｙ！"));
+	}
+}
+
+rule("[INITIALIZE] Menu Cameras System")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Global.CameraPositions = Array(Vector(-110, 1000, -32), Vector(-29.125, 1000, 52.801), Vector(29.488, 1000, 134));
+		Global.LookAtPositions = Array(Vector(-113.250, 1000, -30), Vector(-34.282, 1000, 79.760), Vector(-212.006, 1000, 235.001));
+	}
+}
+
+rule("[INITIALIZE] Each Player System")
+{
+	event
+	{
+		Player Joined Match;
+		All;
+		All;
+	}
+
+	actions
+	{
+		Event Player.MenuInWorldTexts = Empty Array;
+		Event Player.Age = 18;
+		Event Player.Pronouns = Empty Array;
+		Event Player.PotentialMatches = Empty Array;
+		Event Player.MatchedWith = Empty Array;
+		Event Player.MatchedWithHUD = Empty Array;
+		Event Player.MenuMake = 0;
+		Event Player.Safe = 1;
+		Event Player.Player_Modification = Array(100, 100, 100, 100, 100);
+		Event Player.Scale_Prev = 1;
+		Event Player.Scale_Real = 1;
+		Event Player.Progress_Lock = False;
+		Event Player.SmallProfile = 1;
+		Event Player.WorkshopConfig[0] = Workshop Setting Real(Custom String("Gravity Gun"), Custom String("Distance"), 4, 2, 20, 0);
+		Event Player.WorkshopConfig[1] = Workshop Setting Integer(Custom String("Gravity Gun"), Custom String("Launch Power"), 1000, 20,
+			1000, 1);
+		Event Player.WorkshopConfig[5] = Workshop Setting Integer(Custom String("Gravity Gun"), Custom String("Pull Power"), 200, 15, 200,
+			2);
+	}
+}
+
+rule("[INITIALIZE] On Player Spawn System")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Abort If(Event Player.ChangingHero == True);
+		Set Status(Event Player, Null, Phased Out, 9999);
+		Set Damage Dealt(Event Player, 0);
+		Event Player.MenuType = Custom String("LookingForMenu");
+		Event Player.Safe = 1;
+		Event Player.Mute = 0;
+		Set Respawn Max Time(Event Player, 0.500);
+	}
+}
+
+rule("[INITIALIZE] Change Size")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.ProfileCompleteBool == True;
+		Event Player.InAMenu == 0;
+		Is Button Held(Event Player, Button(Melee)) == True;
+		Is Button Held(Event Player, Button(Primary Fire)) == True;
+		Event Player.Mute == 0;
+		Event Player.Safe == 1;
+		Event Player.noClipFlags[1] == False;
+	}
+
+	actions
+	{
+		Wait(0.150, Abort When False);
+		Event Player.MenuType = Custom String("SizeMenu");
+	}
+}
+
+disabled rule("» [MENUS] «")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("{MENU} <-- Enter")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.InAMenu != 0;
+	}
+
+	actions
+	{
+		Start Camera(Event Player, Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching], 0);
+		Set Status(Event Player, Null, Rooted, 9999);
+		Disable Hero HUD(Event Player);
+		Call Subroutine(EvaluateButtons);
+	}
+}
+
+rule("{MENU} --> Exit")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.InAMenu == -1;
+	}
+
+	actions
+	{
+		Stop Camera(Event Player);
+		Event Player.InAMenu = 0;
+		Clear Status(Event Player, Rooted);
+		Allow Button(Event Player, Button(Primary Fire));
+		Allow Button(Event Player, Button(Secondary Fire));
+		Allow Button(Event Player, Button(Ability 1));
+		Allow Button(Event Player, Button(Ability 2));
+		Allow Button(Event Player, Button(Ultimate));
+		Allow Button(Event Player, Button(Interact));
+		Allow Button(Event Player, Button(Melee));
+		Allow Button(Event Player, Button(Reload));
+		Enable Hero HUD(Event Player);
+		Call Subroutine(EvaluateButtons);
+	}
+}
+
+rule("{MENU} Cursor Up")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.InAMenu == 1;
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+		Event Player.MenuCursorIndex < Event Player.CursorMax;
+	}
+
+	actions
+	{
+		If(Event Player.MenuType == Custom String("Traits") || Event Player.MenuType == Custom String("Desired Traits"));
+			"Scrolling cursor"
+			If(Event Player.MenuCursorIndex + Event Player.Offset_Woo >= 7 && Event Player.Offset_Woo <= Count Of(Global.Traits) - 10);
+				Event Player.Offset_Woo += 1;
+			Else;
+				Event Player.MenuCursorIndex += 1;
+			End;
+		"Regular Cursor"
+		Else;
+			Event Player.MenuCursorIndex += 1;
+		End;
+	}
+}
+
+rule("{MENU} Cursor Down")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.InAMenu == 1;
+		Is Button Held(Event Player, Button(Primary Fire)) == True;
+		Event Player.MenuCursorIndex > 0;
+	}
+
+	actions
+	{
+		If(Event Player.MenuType == Custom String("Traits") || Event Player.MenuType == Custom String("Desired Traits"));
+			"Scrolling cursor"
+			If(Event Player.Offset_Woo > 0 && Event Player.MenuCursorIndex + Event Player.Offset_Woo <= Count Of(Global.Traits) - 7);
+				Event Player.Offset_Woo -= 1;
+			Else;
+				Event Player.MenuCursorIndex -= 1;
+			End;
+		"Regular Cursor"
+		Else;
+			Event Player.MenuCursorIndex -= 1;
+		End;
+	}
+}
+
+rule("{MENU} Potential Match")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("Your potential match!");
+	}
+
+	actions
+	{
+		Event Player.ModToggle = 0;
+		Call Subroutine(CleanseLastMenu);
+		Event Player.InAMenu = 1;
+		Event Player.M_Is_Crouching = 2;
+		Event Player.CursorMax = 1;
+		Wait(0.050, Ignore Condition);
+		"Header"
+		Create In-World Text(Event Player, Event Player.ViewingMatch.SmallProfile == 0 ? Custom String("This is NULL - Contact Host")
+			: Custom String("{0} {1}'s Profile {0}", Ability Icon String(Hero Of(Event Player.ViewingMatch), Button(Ultimate)),
+			Event Player.ViewingMatch), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 75, 0)), 3, Clip Against Surfaces,
+			Visible To Position and String, Color(Sky Blue), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("Is here for: {0}", Global.LookingFors[Event Player.ViewingMatch.LookingFor]),
+			Update Every Frame(200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 60,
+			0)), 2, Clip Against Surfaces, Visible To Position and String, Color(Turquoise), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Buttons"
+		Create In-World Text(Event Player, Event Player.ViewingMatch.SmallProfile == 0 ? Custom String("Null - Contact Host")
+			: Custom String("{0} / {1}", Event Player.ViewingMatch.Age, Global.Genders[Event Player.ViewingMatch.Moderator]),
+			Update Every Frame(200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 50,
+			0)), 2, Clip Against Surfaces, Visible To Position and String, Color(Orange), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("{0}", Global.Pronoun[Event Player.ViewingMatch.Pronouns]), Update Every Frame(
+			200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 40,
+			0)), 2, Clip Against Surfaces, Visible To Position and String, Color(Orange), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("{0}", Global.Statuses[Event Player.ViewingMatch.Status]), Update Every Frame(
+			200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 20,
+			0)), 2, Clip Against Surfaces, Visible To Position and String, Color(Orange), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("My half orange? :o"), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 10, 0)), 2, Clip Against Surfaces,
+			Visible To Position and String, Color(Green), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("{2}   {0}   {1}", Event Player.BoolIsReevaluation ? Custom String("Continue")
+			: Custom String("Like"), Event Player.MenuCursorIndex == 0 ? Custom String("<--") : Custom String("    "), Icon String(Heart)),
+			Update Every Frame(200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -60,
+			0)), 2, Clip Against Surfaces, Visible To Position String and Color, Event Player.MenuCursorIndex == 0 ? Color(Green) : Color(
+			White), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("{0}   {1}", Event Player.BoolIsReevaluation ? Custom String("Unmatch")
+			: Custom String("Not Interested"), Event Player.MenuCursorIndex == 1 ? Custom String("<--") : Custom String("    ")),
+			Update Every Frame(200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -70,
+			0)), 2, Clip Against Surfaces, Visible To Position String and Color, Event Player.MenuCursorIndex == 1 ? Color(Red) : Color(
+			White), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Controls"
+		Create In-World Text(Event Player, Custom String("Up [{0}]      Down [{1}]      {2}", Input Binding String(Button(Secondary Fire)),
+			Input Binding String(Button(Primary Fire)), Custom String("Select [{0}]      Exit [{1}]", Input Binding String(Button(Jump)),
+			Input Binding String(Button(Crouch)))), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -85, 0)), 2, Clip Against Surfaces,
+			Visible To Position and String, Color(Red), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Wait Until(!Is Button Held(Event Player, Button(Crouch)), 4);
+		Event Player.ModToggle = True;
+	}
+}
+
+rule("{MENU} Viewing")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("Viewing");
+	}
+
+	actions
+	{
+		Event Player.ModToggle = 0;
+		Call Subroutine(CleanseLastMenu);
+		Call Subroutine(BuildTraitStrings);
+		Event Player.InAMenu = 1;
+		Event Player.M_Is_Crouching = 0;
+		Event Player.CursorMax = 0;
+		Wait(0.050, Ignore Condition);
+		"Header"
+		Create In-World Text(Event Player, Event Player.ViewingMatch.SmallProfile == 0 ? Custom String("Null - Contact Host")
+			: Custom String("{0} {1}'s Profile {0}", Ability Icon String(Hero Of(Event Player.ViewingMatch), Button(Ultimate)),
+			Event Player.ViewingMatch), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 75, 0)), 3, Clip Against Surfaces,
+			Visible To Position and String, Color(Sky Blue), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Buttons"
+		Create In-World Text(Event Player, Event Player.ViewingMatch.SmallProfile == 0 ? Custom String("Null - Contact Host")
+			: Custom String("{0} / {1}", Event Player.ViewingMatch.Age, Global.Genders[Event Player.ViewingMatch.Moderator]),
+			Update Every Frame(200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 50,
+			0)), 2, Clip Against Surfaces, Visible To Position and String, Color(Aqua), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("{0}", Global.Pronoun[Event Player.ViewingMatch.Pronouns]), Update Every Frame(
+			200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 40,
+			0)), 2, Clip Against Surfaces, Visible To Position and String, Color(Blue), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("{0}", Global.Statuses[Event Player.ViewingMatch.Status]), Update Every Frame(
+			200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 20,
+			0)), 2, Clip Against Surfaces, Visible To Position and String, Color(Turquoise), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("Is here for: {0}", Global.LookingFors[Event Player.ViewingMatch.LookingFor]),
+			Update Every Frame(200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 0, 0)),
+			2, Clip Against Surfaces, Visible To Position and String, Color(Turquoise), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("Likes: {0}", Global.Sexualities[Event Player.ViewingMatch.Sexuality]),
+			Update Every Frame(200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -10,
+			0)), 2, Clip Against Surfaces, Visible To Position and String, Color(Purple), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("Continue   <--"), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -60, 0)), 2, Clip Against Surfaces,
+			Visible To Position String and Color, Color(Green), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Controls"
+		Create In-World Text(Event Player, Custom String("Select [{0}]      Exit [Crouch]", Input Binding String(Button(Jump))),
+			Update Every Frame(200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -85,
+			0)), 2, Clip Against Surfaces, Visible To Position and String, Color(Red), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Wait Until(!Is Button Held(Event Player, Button(Crouch)), 4);
+		Event Player.ModToggle = True;
+	}
+}
+
+rule("{MENU} Linear 0: Age")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("Linear");
+		Event Player.LinearStage == 0;
+	}
+
+	actions
+	{
+		Event Player.ModToggle = 0;
+		Call Subroutine(CleanseLastMenu);
+		Event Player.InAMenu = 1;
+		Event Player.M_Is_Crouching = 0;
+		Event Player.CursorMax = 0;
+		Wait(0.050, Ignore Condition);
+		"Header"
+		Create In-World Text(Event Player, Event Player.SmallProfile == 0 ? Custom String("[1/10] Select Your Age") : Custom String(
+			"[1/6] Select Your Age"), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 75, 0)), 3, Clip Against Surfaces,
+			Visible To Position and String, Color(Sky Blue), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Description"
+		Create In-World Text(Event Player, Custom String("18+ players can only match with 18+ players."), Update Every Frame(
+			200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 60,
+			0)), 2, Clip Against Surfaces, Visible To Position String and Color, Event Player.Age < 18 ? Color(Gray) : Color(White),
+			Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("Underage players can only match with 18- players."), Update Every Frame(
+			200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 50,
+			0)), 2, Clip Against Surfaces, Visible To Position String and Color, Event Player.Age < 18 ? Color(White) : Color(Gray),
+			Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Buttons"
+		Create In-World Text(Event Player, Custom String("Age: < {0} >", Event Player.Age), Update Every Frame(50 * Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching])
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 0, 0)), 4, Clip Against Surfaces,
+			Visible To Position and String, Color(Orange), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Controls"
+		Create In-World Text(Event Player, Custom String("Younger [{0}]      Older [{1}]      Submit [{2}]", Input Binding String(Button(
+			Primary Fire)), Input Binding String(Button(Secondary Fire)), Input Binding String(Button(Jump))), Update Every Frame(
+			50 * Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching])
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -85, 0)), 2, Clip Against Surfaces,
+			Visible To Position and String, Color(Red), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Wait Until(!Is Button Held(Event Player, Button(Jump)), 2);
+		Event Player.ModToggle = 1;
+	}
+}
+
+rule("{MENU} Linear 1: Gender")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("Linear");
+		Event Player.LinearStage == 1;
+	}
+
+	actions
+	{
+		Event Player.ModToggle = 0;
+		Call Subroutine(CleanseLastMenu);
+		Event Player.InAMenu = 1;
+		Event Player.M_Is_Crouching = 0;
+		Event Player.CursorMax = 0;
+		Wait(0.050, Ignore Condition);
+		"Header"
+		Create In-World Text(Event Player, Event Player.SmallProfile == 0 ? Custom String("[2/10] Select Your Gender") : Custom String(
+			"[2/6] Select Your Gender"), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 75, 0)), 3, Clip Against Surfaces,
+			Visible To Position and String, Color(Sky Blue), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Description"
+		Create In-World Text(Event Player, Custom String("This will affect who you see as"), Update Every Frame(200 * Normalize(
+			Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 60, 0)), 2, Clip Against Surfaces,
+			Visible To Position and String, Color(White), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("a potential match"), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 50, 0)), 2, Clip Against Surfaces,
+			Visible To Position and String, Color(White), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Buttons"
+		Create In-World Text(Event Player, Custom String("Gender: < {0} >", Global.Genders[Event Player.Moderator]), Update Every Frame(
+			50 * Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching])
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 0, 0)), 4, Clip Against Surfaces,
+			Visible To Position String and Color, Event Player.Moderator == 0 ? Color(Orange) : Color(Orange), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Controls"
+		Create In-World Text(Event Player, Custom String("Previous [{0}]      Next [{1}]      {2}", Input Binding String(Button(
+			Primary Fire)), Input Binding String(Button(Secondary Fire)), Custom String("Back [Crouch]      Submit [{0}]",
+			Input Binding String(Button(Jump)))), Update Every Frame(50 * Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching])
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -85, 0)), 2, Clip Against Surfaces,
+			Visible To Position and String, Color(Red), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Wait Until(!Is Button Held(Event Player, Button(Jump)) && !Is Button Held(Event Player, Button(Crouch)), 2);
+		Event Player.ModToggle = 1;
+	}
+}
+
+rule("{MENU} Linear 2: Pronouns")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("Linear");
+		Event Player.LinearStage == 2;
+	}
+
+	actions
+	{
+		Event Player.ModToggle = 0;
+		Call Subroutine(CleanseLastMenu);
+		Event Player.InAMenu = 1;
+		Event Player.M_Is_Crouching = 0;
+		Event Player.CursorMax = 0;
+		Wait(0.050, Ignore Condition);
+		"Header"
+		Create In-World Text(Event Player, Event Player.SmallProfile == 0 ? Custom String("[5/10] Select your pronouns") : Custom String(
+			"[3/6] Select your pronouns"), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 75, 0)), 3, Clip Against Surfaces,
+			Visible To Position and String, Color(Sky Blue), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Description"
+		Create In-World Text(Event Player, Custom String("This will be shown on your profile"), Update Every Frame(200 * Normalize(
+			Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 60, 0)), 2, Clip Against Surfaces,
+			Visible To Position and String, Color(White), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Buttons"
+		Create In-World Text(Event Player, Custom String("< {0} >", Global.Pronoun[Event Player.Pronouns]), Update Every Frame(
+			50 * Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching])
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 0, 0)), 4, Clip Against Surfaces,
+			Visible To Position String and Color, Event Player.Moderator == 0 ? Color(Gray) : Color(Orange), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Controls"
+		Create In-World Text(Event Player, Custom String("Previous [{0}]      Next [{1}]      {2}", Input Binding String(Button(
+			Primary Fire)), Input Binding String(Button(Secondary Fire)), Custom String("Back [Crouch]      Submit [{0}]",
+			Input Binding String(Button(Jump)))), Update Every Frame(50 * Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching])
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -85, 0)), 2, Clip Against Surfaces,
+			Visible To Position and String, Color(Red), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Wait Until(!Is Button Held(Event Player, Button(Jump)) && !Is Button Held(Event Player, Button(Crouch)), 2);
+		Event Player.ModToggle = 1;
+	}
+}
+
+rule("{MENU} Linear 3: Titles")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("Linear");
+		Event Player.LinearStage == 3;
+	}
+
+	actions
+	{
+		Event Player.ModToggle = 0;
+		Call Subroutine(CleanseLastMenu);
+		Event Player.InAMenu = 1;
+		Event Player.M_Is_Crouching = 0;
+		Event Player.CursorMax = 0;
+		Wait(0.050, Ignore Condition);
+		"Header"
+		Create In-World Text(Event Player, Event Player.SmallProfile == 0 ? Custom String("[6/10] Select your title!") : Custom String(
+			"[4/6] Select your title!"), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 75, 0)), 3, Clip Against Surfaces,
+			Visible To Position and String, Color(Sky Blue), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Description"
+		Create In-World Text(Event Player, Custom String(
+			"It will show up on your head. If you already have a title, it will replace your title, \"No Title\" leave your original title."),
+			Update Every Frame(200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 55,
+			0)), 2, Clip Against Surfaces, Visible To Position and String, Color(White), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Buttons"
+		Create In-World Text(Event Player, Custom String("{0}", Global.Titles[Event Player.Title]), Update Every Frame(50 * Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching])
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 0, 0)), 4, Clip Against Surfaces,
+			Visible To Position String and Color, Color(Orange), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Controls"
+		Create In-World Text(Event Player, Custom String("Previous [{0}]      Next [{1}]      {2}", Input Binding String(Button(
+			Primary Fire)), Input Binding String(Button(Secondary Fire)), Custom String("Back [Crouch]      Submit [{0}]",
+			Input Binding String(Button(Jump)))), Update Every Frame(50 * Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching])
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -85, 0)), 2, Clip Against Surfaces,
+			Visible To Position and String, Color(Red), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Wait Until(!Is Button Held(Event Player, Button(Jump)) && !Is Button Held(Event Player, Button(Crouch)), 2);
+		Event Player.ModToggle = 1;
+	}
+}
+
+rule("{MENU} Linear 4: Interested in")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("Linear");
+		Event Player.LinearStage == 4;
+	}
+
+	actions
+	{
+		Event Player.ModToggle = 0;
+		Call Subroutine(CleanseLastMenu);
+		Event Player.InAMenu = 1;
+		Event Player.M_Is_Crouching = 0;
+		Event Player.CursorMax = 0;
+		Wait(0.050, Ignore Condition);
+		"Header"
+		Create In-World Text(Event Player, Event Player.SmallProfile == 0 ? Custom String("[9/10] Who are you interested in")
+			: Custom String("[5/6] Who are you interested in"), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 75, 0)), 3, Clip Against Surfaces,
+			Visible To Position and String, Color(Sky Blue), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Description"
+		Create In-World Text(Event Player, Custom String("This will affect who you see as"), Update Every Frame(200 * Normalize(
+			Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 60, 0)), 2, Clip Against Surfaces,
+			Visible To Position String and Color, Event Player.Sexuality == 4 ? Color(Gray) : Color(White), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("a potential match"), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 50, 0)), 2, Clip Against Surfaces,
+			Visible To Position String and Color, Event Player.Sexuality == 4 ? Color(Gray) : Color(White), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Buttons"
+		Create In-World Text(Event Player, Custom String("Interested in: < {0} >", Global.Sexualities[Event Player.Sexuality]),
+			Update Every Frame(50 * Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching]) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 0, 0)),
+			4, Clip Against Surfaces, Visible To Position String and Color, Event Player.Moderator == 0 ? Color(Gray) : Color(Orange),
+			Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Controls"
+		Create In-World Text(Event Player, Custom String("Previous [{0}]      Next [{1}]      {2}", Input Binding String(Button(
+			Primary Fire)), Input Binding String(Button(Secondary Fire)), Custom String("Back [Crouch]      Submit [{0}]",
+			Input Binding String(Button(Jump)))), Update Every Frame(50 * Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching])
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -85, 0)), 2, Clip Against Surfaces,
+			Visible To Position and String, Color(Red), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Wait Until(!Is Button Held(Event Player, Button(Jump)) && !Is Button Held(Event Player, Button(Crouch)), 2);
+		Event Player.ModToggle = 1;
+	}
+}
+
+rule("{MENU} Linear 5: Status")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("Linear");
+		Event Player.LinearStage == 5;
+	}
+
+	actions
+	{
+		Event Player.ModToggle = 0;
+		Call Subroutine(CleanseLastMenu);
+		Event Player.InAMenu = 1;
+		Event Player.M_Is_Crouching = 0;
+		Event Player.CursorMax = 0;
+		Wait(0.050, Ignore Condition);
+		"Header"
+		Create In-World Text(Event Player, Event Player.SmallProfile == 0 ? Custom String("[10/10] Select your relationship status")
+			: Custom String("[6/6] Select your relationship status"), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 75, 0)), 3, Clip Against Surfaces,
+			Visible To Position and String, Color(Sky Blue), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Description"
+		Create In-World Text(Event Player, Custom String("If you are taken, you will not see"), Update Every Frame(200 * Normalize(
+			Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 60, 0)), 2, Clip Against Surfaces,
+			Visible To Position String and Color,
+			Event Player.Status == 2 || Event Player.Status == 5 || Event Player.Status == 6 || Event Player.Status == 8 ? Color(White)
+			: Color(Gray), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("any potential matches"), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 50, 0)), 2, Clip Against Surfaces,
+			Visible To Position String and Color,
+			Event Player.Status == 2 || Event Player.Status == 5 || Event Player.Status == 6 || Event Player.Status == 8 ? Color(White)
+			: Color(Gray), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Buttons"
+		Create In-World Text(Event Player, Custom String("Status: < {0} >", Global.Statuses[Event Player.Status]), Update Every Frame(
+			50 * Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching])
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 0, 0)), 4, Clip Against Surfaces,
+			Visible To Position String and Color, Event Player.Moderator == 0 ? Color(Gray) : Color(Orange), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Controls"
+		Create In-World Text(Event Player, Custom String("Previous [{0}]      Next [{1}]      {2}", Input Binding String(Button(
+			Primary Fire)), Input Binding String(Button(Secondary Fire)), Custom String("Back [Crouch]      Submit [{0}]",
+			Input Binding String(Button(Jump)))), Update Every Frame(50 * Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching])
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -85, 0)), 2, Clip Against Surfaces,
+			Visible To Position and String, Color(Red), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Wait Until(!Is Button Held(Event Player, Button(Jump)) && !Is Button Held(Event Player, Button(Crouch)), 2);
+		Event Player.ModToggle = 1;
+	}
+}
+
+rule("{MENU} CursorIndex START")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("StartMenu");
+	}
+
+	actions
+	{
+		Event Player.ModToggle = 0;
+		Call Subroutine(CleanseLastMenu);
+		Event Player.InAMenu = 1;
+		Event Player.M_Is_Crouching = 0;
+		Event Player.CursorMax = 0;
+		Wait(0.050, Ignore Condition);
+		"Header"
+		Create In-World Text(Event Player, Custom String("Welcome to Tinderwatch 2\r\nUpdate: 01/21/2024", Hero Icon String(Hero Of(
+			Event Player)), Event Player), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 75, 0)), 3, Clip Against Surfaces,
+			Visible To Position and String, Color(Violet), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("In Tinderwatch 2 you can find new friends and people to talk with! Be happy :D",
+			Event Player.TargetPlayer), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 40, 0)), 2, Clip Against Surfaces,
+			Visible To Position and String, Color(Purple), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("To start press jump, see you inside!", Event Player.TargetPlayer),
+			Update Every Frame(200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 20,
+			0)), 2, Clip Against Surfaces, Visible To Position and String, Color(Purple), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("{2}   {0}   {1}", Event Player.BoolIsReevaluation ? Custom String("Let's Start!")
+			: Custom String("Let's Do It!"), Event Player.MenuCursorIndex == 0 ? Custom String("<--") : Custom String("    "), Icon String(
+			Checkmark)), Update Every Frame(200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -30,
+			0)), 2, Clip Against Surfaces, Visible To Position String and Color, Event Player.MenuCursorIndex == 0 ? Color(Purple) : Color(
+			White), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Controls"
+		Create In-World Text(Event Player, Custom String("Select [{0}]", Input Binding String(Button(Jump)), Input Binding String(Button(
+			Primary Fire)), Input Binding String(Button(Secondary Fire))), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -85, 0)), 2, Clip Against Surfaces,
+			Visible To Position and String, Color(Red), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Wait Until(!Is Button Held(Event Player, Button(Crouch)), 4);
+		Event Player.ModToggle = True;
+	}
+}
+
+rule("{MENU} CursorIndex Update")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("DiscordMenu");
+	}
+
+	actions
+	{
+		Event Player.ModToggle = 0;
+		Call Subroutine(CleanseLastMenu);
+		Event Player.InAMenu = 1;
+		Event Player.M_Is_Crouching = 0;
+		Event Player.CursorMax = 0;
+		Wait(0.050, Ignore Condition);
+		"Header"
+		Create In-World Text(Event Player, Custom String("Partner Discords!", Hero Icon String(Hero Of(Event Player)), Event Player),
+			Update Every Frame(200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 75,
+			0)), 3, Clip Against Surfaces, Visible To Position and String, Color(Sky Blue), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("Here are the main servers that support Tinderwatch 2.",
+			Event Player.TargetPlayer), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 40, 0)), 2, Clip Against Surfaces,
+			Visible To Position and String, Color(Blue), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create In-World Text(Event Player, Custom String("{2}   {0}   {1}", Event Player.BoolIsReevaluation ? Custom String(
+			"The Puzee Palace Server: discord.gg/puzeepalace") : Custom String("The Puzee Palace Server: discord.gg/puzeepalace"),
+			Event Player.MenuCursorIndex == 0 ? Custom String("<--") : Custom String("    "), Icon String(Checkmark)), Update Every Frame(
+			200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -30,
+			0)), 4, Clip Against Surfaces, Visible To Position String and Color, Event Player.MenuCursorIndex == 0 ? Color(Violet) : Color(
+			White), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Controls"
+		Create In-World Text(Event Player, Custom String("Exit [Crouch]      Up [{1}]       Down [{2}]", Input Binding String(Button(
+			Jump)), Input Binding String(Button(Primary Fire)), Input Binding String(Button(Secondary Fire))), Update Every Frame(
+			200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -85,
+			0)), 2, Clip Against Surfaces, Visible To Position and String, Color(Red), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Wait Until(!Is Button Held(Event Player, Button(Crouch)), 4);
+		Event Player.ModToggle = True;
+	}
+}
+
+rule("{MENU} Looking For")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("LookingForMenu");
+	}
+
+	actions
+	{
+		Event Player.ModToggle = 0;
+		Call Subroutine(CleanseLastMenu);
+		Event Player.InAMenu = 1;
+		Event Player.M_Is_Crouching = 0;
+		Event Player.CursorMax = 0;
+		Wait(0.050, Ignore Condition);
+		"Header"
+		Create In-World Text(Event Player, Event Player.SmallProfile == 0 ? Custom String("What are you looking for in Tinderwatch 2?")
+			: Custom String("What are you looking for in Tinderwatch 2?"), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 75, 0)), 3, Clip Against Surfaces,
+			Visible To Position and String, Color(Sky Blue), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Buttons"
+		Create In-World Text(Event Player, Custom String("Looking for: < {0} >", Global.LookingFors[Event Player.LookingFor]),
+			Update Every Frame(50 * Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching]) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 0, 0)),
+			4, Clip Against Surfaces, Visible To Position and String, Color(Orange), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Controls"
+		Create In-World Text(Event Player, Custom String("Submit [{2}]", Input Binding String(Button(Primary Fire)), Input Binding String(
+			Button(Secondary Fire)), Input Binding String(Button(Interact))), Update Every Frame(50 * Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching])
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -85, 0)), 4, Clip Against Surfaces,
+			Visible To Position and String, Color(Red), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Wait Until(!Is Button Held(Event Player, Button(Jump)), 2);
+		Event Player.ModToggle = 1;
+	}
+}
+
+rule("{MENU} Cursor Index Size")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("SizeMenu");
+	}
+
+	actions
+	{
+		Event Player.ModToggle = 0;
+		Call Subroutine(CleanseLastMenu);
+		Event Player.InAMenu = 1;
+		Event Player.M_Is_Crouching = 0;
+		Event Player.CursorMax = 0;
+		Wait(0.050, Ignore Condition);
+		Create In-World Text(Event Player, Custom String(
+			"Use {0} to decrease size. {1} to increase size. {2} to restore your original size.\r\nUse ULTIMATE to apply the size.",
+			Input Binding String(Button(Secondary Fire)), Input Binding String(Button(Primary Fire)), Input Binding String(Button(
+			Reload))), Update Every Frame(200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, 40,
+			0)), 2, Clip Against Surfaces, Visible To Position and String, Color(Blue), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Create Progress Bar In-World Text(Event Player, Event Player.Scale_Real * 40, Custom String("Your Size: {1}% | Desired Size: {0}%",
+			Event Player.Scale_Prev * 100, Event Player.Scale_Real * 100), Update Every Frame(200 * Normalize(Vector Towards(
+			Global.CameraPositions[Event Player.M_Is_Crouching], Global.LookAtPositions[Event Player.M_Is_Crouching]))
+			+ Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -30, 0)), 2, Clip Against Surfaces, Color(Purple), Color(
+			Team 1), Visible To Position Values and Color, Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		"Controls"
+		Create In-World Text(Event Player, Custom String(
+			"Apply Size [{0}]      Restart Size [Reload]      Decrement Size [{1}]       Increment Size [{2}]       Exit [Crouch]",
+			Input Binding String(Button(Ultimate)), Input Binding String(Button(Primary Fire)), Input Binding String(Button(
+			Secondary Fire))), Update Every Frame(200 * Normalize(Vector Towards(Global.CameraPositions[Event Player.M_Is_Crouching],
+			Global.LookAtPositions[Event Player.M_Is_Crouching])) + Global.CameraPositions[Event Player.M_Is_Crouching] + Vector(0, -85,
+			0)), 2, Clip Against Surfaces, Visible To Position and String, Color(Red), Default Visibility);
+		Modify Player Variable(Event Player, MenuInWorldTexts, Append To Array, Last Text ID);
+		Wait Until(!Is Button Held(Event Player, Button(Crouch)), 4);
+		Event Player.ModToggle = True;
+	}
+}
+
+disabled rule("» [SUBROUTINES] «")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("<SUBROUTINE> Cleanse Last Menu")
+{
+	event
+	{
+		Subroutine;
+		CleanseLastMenu;
+	}
+
+	actions
+	{
+		Event Player.MenuCursorIndex = 0;
+		While(Count Of(Event Player.MenuInWorldTexts) > 0);
+			Destroy In-World Text(First Of(Event Player.MenuInWorldTexts));
+			Destroy Progress Bar In-World Text(First Of(Event Player.MenuInWorldTexts));
+			Modify Player Variable(Event Player, MenuInWorldTexts, Remove From Array By Index, 0);
+		End;
+		If(Event Player.ExtraSpecialChild != 0);
+			Destroy Effect(Event Player.ExtraSpecialChild);
+			Destroy Effect(Event Player.ScrollBackground);
+			Event Player.ExtraSpecialChild = 0;
+			Event Player.ScrollBackground = 0;
+		End;
+	}
+}
+
+rule("<SUBROUTINE> Next Match")
+{
+	event
+	{
+		Subroutine;
+		NextMatch;
+	}
+
+	actions
+	{
+		If(Count Of(Event Player.PotentialMatches) > 0 && !Event Player.BoolIsReevaluation);
+			Event Player.ViewingMatch = First Of(Event Player.PotentialMatches);
+		Else;
+			Event Player.MenuType = 0;
+			Event Player.InAMenu = -1;
+			Call Subroutine(CleanseLastMenu);
+		End;
+	}
+}
+
+rule("<SUBROUTINE> Evaluate Buttons")
+{
+	event
+	{
+		Subroutine;
+		EvaluateButtons;
+	}
+
+	actions
+	{
+		If(Event Player.InAMenu == 1);
+			Disallow Button(Event Player, Button(Primary Fire));
+			Disallow Button(Event Player, Button(Secondary Fire));
+			Disallow Button(Event Player, Button(Ability 1));
+			Disallow Button(Event Player, Button(Ability 2));
+			Disallow Button(Event Player, Button(Ultimate));
+			Disallow Button(Event Player, Button(Interact));
+			Disallow Button(Event Player, Button(Melee));
+			Disallow Button(Event Player, Button(Reload));
+		Else;
+			Allow Button(Event Player, Button(Primary Fire));
+			Allow Button(Event Player, Button(Secondary Fire));
+			Allow Button(Event Player, Button(Ability 1));
+			Allow Button(Event Player, Button(Ability 2));
+			Allow Button(Event Player, Button(Ultimate));
+			Allow Button(Event Player, Button(Interact));
+			Allow Button(Event Player, Button(Melee));
+			Allow Button(Event Player, Button(Reload));
+		End;
+	}
+}
+
+rule("<SUBROUTINE> Size Scale")
+{
+	event
+	{
+		Subroutine;
+		Scale_Progress;
+	}
+
+	actions
+	{
+		Event Player.Progress_Lock = True;
+		Start Scaling Player(Event Player, Event Player.Scale_Real, True);
+		Chase Player Variable Over Time(Event Player, Scale_Real, Event Player.Scale_Prev, 2, None);
+		Wait Until(Event Player.Scale_Real == Event Player.Scale_Prev || Event Player.Progress_Stop, 99999);
+		Stop Chasing Player Variable(Event Player, Scale_Real);
+		Event Player.Player_Modification[4] = Event Player.Scale_Real * 100;
+		Set Max Health(Event Player, Event Player.Player_Modification[4]);
+		If(Event Player.Player_Modification[4] >= 100);
+			Set Move Speed(Event Player, Event Player.Player_Modification[4]);
+			Set Jump Vertical Speed(Event Player, Event Player.Player_Modification[4]);
+		End;
+		Wait(0.100, Ignore Condition);
+		Heal(Event Player, Null, 12000);
+		Event Player.Progress_Lock = False;
+	}
+}
+
+disabled rule("» [DATA ADDERS] «")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Age ++")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		((Event Player.MenuType == Custom String("ASL") && Event Player.MenuCursorIndex == 0) || (
+			Event Player.LinearStage == 0 && !Event Player.LIneTargetPos)) == True;
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+		Event Player.Age < 40;
+		Event Player.ModToggle == 1;
+		(Event Player.MenuType == Custom String("StartMenu")) == False;
+		(Event Player.MenuType == Custom String("LookingForMenu")) == False;
+	}
+
+	actions
+	{
+		Event Player.Age += 1;
+	}
+}
+
+rule("Age --")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		((Event Player.MenuType == Custom String("ASL") && Event Player.MenuCursorIndex == 0) || (
+			Event Player.LinearStage == 0 && !Event Player.LIneTargetPos)) == True;
+		Is Button Held(Event Player, Button(Primary Fire)) == True;
+		Event Player.Age > Workshop Setting Integer(Custom String("Privacy"), Custom String("Minimum Age (Min 16 / Max 18)"), 16, 16, 18,
+			0);
+		Event Player.ModToggle == 1;
+		(Event Player.MenuType == Custom String("StartMenu")) == False;
+		(Event Player.MenuType == Custom String("LookingForMenu")) == False;
+	}
+
+	actions
+	{
+		Event Player.Age -= 1;
+	}
+}
+
+rule("Gender ++")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		((Event Player.MenuType == Custom String("ASL") && Event Player.MenuCursorIndex == 1) || (
+			Event Player.LinearStage == 1 && !Event Player.LIneTargetPos)) == True;
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+		Event Player.ModToggle == 1;
+	}
+
+	actions
+	{
+		Event Player.Moderator += 1;
+		If(Event Player.Moderator == Count Of(Global.Genders));
+			Event Player.Moderator = 1;
+		End;
+	}
+}
+
+rule("Gender --")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		((Event Player.MenuType == Custom String("ASL") && Event Player.MenuCursorIndex == 1) || (
+			Event Player.LinearStage == 1 && !Event Player.LIneTargetPos)) == True;
+		Is Button Held(Event Player, Button(Primary Fire)) == True;
+		Event Player.ModToggle == 1;
+	}
+
+	actions
+	{
+		Event Player.Moderator -= 1;
+		If(Event Player.Moderator < 1);
+			Event Player.Moderator = Count Of(Global.Genders) - 1;
+		End;
+	}
+}
+
+rule("Pronouns ++")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		((Event Player.MenuType == Custom String("My Profile") && Event Player.MenuCursorIndex == 1) || (
+			Event Player.LinearStage == 2 && !Event Player.LIneTargetPos)) == True;
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+	}
+
+	actions
+	{
+		Event Player.Pronouns += 1;
+		If(Event Player.Pronouns == Count Of(Global.Pronoun));
+			Event Player.Pronouns = 1;
+		End;
+	}
+}
+
+rule("Pronouns --")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		((Event Player.MenuType == Custom String("My Profile") && Event Player.MenuCursorIndex == 1) || (
+			Event Player.LinearStage == 2 && !Event Player.LIneTargetPos)) == True;
+		Is Button Held(Event Player, Button(Primary Fire)) == True;
+	}
+
+	actions
+	{
+		Event Player.Pronouns -= 1;
+		If(Event Player.Pronouns < 1);
+			Event Player.Pronouns = Count Of(Global.Pronoun) - 1;
+		End;
+	}
+}
+
+rule("Personality ++")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		((Event Player.MenuType == Custom String("My Profile") && Event Player.MenuCursorIndex == 2) || (
+			Event Player.LinearStage == 3 && !Event Player.LIneTargetPos)) == True;
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+		(Event Player.MenuType == Custom String("StartMenu")) == False;
+	}
+
+	actions
+	{
+		Event Player.Title += 1;
+		If(Event Player.Title == Count Of(Global.Titles));
+			Event Player.Title = 1;
+		End;
+	}
+}
+
+rule("Personality --")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		((Event Player.MenuType == Custom String("My Profile") && Event Player.MenuCursorIndex == 2) || (
+			Event Player.LinearStage == 3 && !Event Player.LIneTargetPos)) == True;
+		Is Button Held(Event Player, Button(Primary Fire)) == True;
+		(Event Player.MenuType == Custom String("StartMenu")) == False;
+	}
+
+	actions
+	{
+		Event Player.Title -= 1;
+		If(Event Player.Title < 1);
+			Event Player.Title = Count Of(Global.Titles) - 1;
+		End;
+	}
+}
+
+rule("Preferences ++")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		((Event Player.MenuType == Custom String("My Profile") && Event Player.MenuCursorIndex == 5) || (
+			Event Player.LinearStage == 4 && !Event Player.LIneTargetPos)) == True;
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+	}
+
+	actions
+	{
+		Event Player.Sexuality += 1;
+		If(Event Player.Sexuality == Count Of(Global.Sexualities));
+			Event Player.Sexuality = 1;
+		End;
+	}
+}
+
+rule("Preferences --")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		((Event Player.MenuType == Custom String("My Profile") && Event Player.MenuCursorIndex == 5) || (
+			Event Player.LinearStage == 4 && !Event Player.LIneTargetPos)) == True;
+		Is Button Held(Event Player, Button(Primary Fire)) == True;
+	}
+
+	actions
+	{
+		Event Player.Sexuality -= 1;
+		If(Event Player.Sexuality < 1);
+			Event Player.Sexuality = Count Of(Global.Sexualities) - 1;
+		End;
+	}
+}
+
+rule("Status ++")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		((Event Player.MenuType == Custom String("My Profile") && Event Player.MenuCursorIndex == 6) || (
+			Event Player.LinearStage == 5 && !Event Player.LIneTargetPos)) == True;
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+		Event Player.Status < Count Of(Global.Statuses) - 1;
+	}
+
+	actions
+	{
+		Event Player.Status += 1;
+		If(Event Player.Status == Count Of(Global.Statuses));
+			Event Player.Status = 1;
+		End;
+	}
+}
+
+rule("Status --")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		((Event Player.MenuType == Custom String("My Profile") && Event Player.MenuCursorIndex == 6) || (
+			Event Player.LinearStage == 5 && !Event Player.LIneTargetPos)) == True;
+		Is Button Held(Event Player, Button(Primary Fire)) == True;
+	}
+
+	actions
+	{
+		Event Player.Status -= 1;
+		If(Event Player.Status < 1);
+			Event Player.Status = Count Of(Global.Statuses) - 1;
+		End;
+	}
+}
+
+rule("Looking For ++")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		((Event Player.MenuType == Custom String("LookingForMenu") && Event Player.MenuCursorIndex == 0) || (
+			Event Player.LinearStage == 10 && !Event Player.LIneTargetPos)) == True;
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+		(Event Player.MenuType == Custom String("StartMenu")) == False;
+	}
+
+	actions
+	{
+		Event Player.LookingFor += 1;
+		If(Event Player.LookingFor == Count Of(Global.LookingFors));
+			Event Player.LookingFor = 0;
+		End;
+	}
+}
+
+rule("Looking For --")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		((Event Player.MenuType == Custom String("LookingForMenu") && Event Player.MenuCursorIndex == 0) || (
+			Event Player.LinearStage == 10 && !Event Player.LIneTargetPos)) == True;
+		Is Button Held(Event Player, Button(Primary Fire)) == True;
+		(Event Player.MenuType == Custom String("StartMenu")) == False;
+	}
+
+	actions
+	{
+		Event Player.LookingFor -= 1;
+		If(Event Player.LookingFor < 0);
+			Event Player.LookingFor = Count Of(Global.LookingFors) - 1;
+		End;
+	}
+}
+
+rule("ADMlN ++")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+		(Event Player == Host Player || Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player)
+			== Current Array Element) || Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player)
+			== Current Array Element)) == True;
+		Event Player.InAMenu == 0;
+	}
+
+	actions
+	{
+		Event Player.AdminSelection += 1;
+		If(Event Player.AdminSelection == Count Of(Global.AdminSelections));
+			Event Player.AdminSelection = 0;
+		End;
+	}
+}
+
+rule("ADMlN --")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Primary Fire)) == True;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		(Event Player == Host Player || Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player)
+			== Current Array Element) || Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player)
+			== Current Array Element)) == True;
+		Event Player.InAMenu == 0;
+	}
+
+	actions
+	{
+		Event Player.AdminSelection -= 1;
+		If(Event Player.AdminSelection < 0);
+			Event Player.AdminSelection = Count Of(Global.AdminSelections) - 1;
+		End;
+	}
+}
+
+rule("Scale ++")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Primary Fire)) == True;
+		Event Player.InAMenu == 1;
+		Event Player.Progress_Lock == False;
+		Event Player.MenuType == Custom String("SizeMenu");
+	}
+
+	actions
+	{
+		While(Is Button Held(Event Player, Button(Primary Fire)));
+			Event Player.Scale_Prev -= 0.100;
+			Modify Player Variable(Event Player, Scale_Prev, Max, 0.200);
+			Wait(0.200, Ignore Condition);
+		End;
+	}
+}
+
+rule("Scale --")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+		Event Player.InAMenu == 1;
+		Event Player.Progress_Lock == False;
+		Event Player.MenuType == Custom String("SizeMenu");
+	}
+
+	actions
+	{
+		While(Is Button Held(Event Player, Button(Secondary Fire)));
+			Event Player.Scale_Prev += 0.100;
+			Modify Player Variable(Event Player, Scale_Prev, Min, 2.500);
+			Wait(0.200, Ignore Condition);
+		End;
+	}
+}
+
+disabled rule("» [STATES] «")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("My Profile --> ASL")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("My Profile");
+		Event Player.MenuCursorIndex == 1;
+		Is Button Held(Event Player, Button(Jump)) == True;
+		Event Player.ModToggle == 1;
+	}
+
+	actions
+	{
+		Event Player.MenuType = Custom String("ASL");
+	}
+}
+
+rule("<-- Return to My Profile")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Event Player.MenuType == Custom String("Traits") || Event Player.MenuType == Custom String("Desired Traits")
+			|| Event Player.MenuType == Custom String("ASL")) == True;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		Event Player.ModToggle == 1;
+		Event Player.LIneTargetPos == True;
+	}
+
+	actions
+	{
+		Event Player.MenuType = Custom String("My Profile");
+		Wait(0.100, Ignore Condition);
+		Press Button(Event Player, Button(Crouch));
+	}
+}
+
+rule("--> Match / Continue")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("Your potential match!");
+		Is Button Held(Event Player, Button(Jump)) == True;
+		Event Player.MenuCursorIndex == 0;
+	}
+
+	actions
+	{
+		If(!Event Player.BoolIsReevaluation);
+			Modify Player Variable(Event Player, PotentialMatches, Remove From Array By Value, Event Player.ViewingMatch);
+			Modify Player Variable(Event Player, AttemptedToMatchWith, Append To Array, Event Player.ViewingMatch);
+			If(Array Contains(Event Player.ViewingMatch.AttemptedToMatchWith, Event Player));
+				Modify Player Variable(Event Player, MatchedWith, Append To Array, Event Player.ViewingMatch);
+				Modify Player Variable(Event Player.ViewingMatch, MatchedWith, Append To Array, Event Player);
+				Big Message(Event Player, Custom String("You Matched With {0} :D", Event Player.ViewingMatch));
+				Big Message(Event Player.ViewingMatch, Custom String("You Matched With {0}", Event Player));
+				Start Forcing Player Outlines(Event Player, Event Player.ViewingMatch, True, Color(Green), Always);
+				Start Forcing Player Outlines(Event Player.ViewingMatch, Event Player, True, Color(Green), Always);
+				Create HUD Text(Filtered Array(Event Player, Event Player.InAMenu == 0), Null, Custom String("Matched with {0}", Evaluate Once(
+					Event Player.ViewingMatch)), Null, Right, 3, Color(White), Color(White), Color(Green), Visible To and String,
+					Default Visibility);
+				Modify Player Variable(Event Player, MatchedWithHUD, Append To Array, Last Text ID);
+				Create HUD Text(Filtered Array(Evaluate Once(Event Player.ViewingMatch), Evaluate Once(Event Player.ViewingMatch).InAMenu == 0),
+					Null, Custom String("Matched with {0}", Event Player), Null, Right, 3, Color(White), Color(White), Color(Green),
+					Visible To and String, Default Visibility);
+				Modify Player Variable(Event Player.ViewingMatch, MatchedWithHUD, Append To Array, Last Text ID);
+			End;
+		End;
+		Wait(0.250, Ignore Condition);
+		Wait Until(!Is Button Held(Event Player, Button(Jump)), 4);
+		Call Subroutine(NextMatch);
+		Play Effect(Event Player, Good Pickup Effect, Color(Green), Global.CameraPositions[Event Player.M_Is_Crouching], 1);
+		Play Effect(Event Player, Buff Impact Sound, Color(White), Event Player, 55);
+		Play Effect(Event Player, Buff Impact Sound, Color(White), Global.CameraPositions[Event Player.M_Is_Crouching], 55);
+	}
+}
+
+rule("--> Reject / Unmatch")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("Your potential match!");
+		Is Button Held(Event Player, Button(Jump)) == True;
+		Event Player.MenuCursorIndex == 1;
+	}
+
+	actions
+	{
+		If(!Event Player.BoolIsReevaluation);
+			Modify Player Variable(Event Player, PotentialMatches, Remove From Array By Value, Event Player.ViewingMatch);
+			disabled Modify Player Variable(Event Player.ViewingMatch, PotentialMatches, Remove From Array By Value, Event Player);
+		Else;
+			Big Message(Event Player, Custom String("You have unmatched {0}", Event Player.ViewingMatch));
+			Big Message(Event Player.ViewingMatch, Custom String("{0} have unmatched you :(", Event Player));
+			"Remove your hud"
+			Event Player.TEMPremovingPlayerIndex = Index Of Array Value(Event Player.MatchedWith, Event Player.ViewingMatch);
+			Destroy HUD Text(Event Player.MatchedWithHUD[Event Player.TEMPremovingPlayerIndex]);
+			Modify Player Variable(Event Player, MatchedWith, Remove From Array By Index, Event Player.TEMPremovingPlayerIndex);
+			Modify Player Variable(Event Player, MatchedWithHUD, Remove From Array By Index, Event Player.TEMPremovingPlayerIndex);
+			"Remove their hud"
+			Event Player.ViewingMatch.TEMPremovingPlayerIndex = Index Of Array Value(Event Player.ViewingMatch.MatchedWith, Event Player);
+			Destroy HUD Text(Event Player.ViewingMatch.MatchedWithHUD[Event Player.ViewingMatch.TEMPremovingPlayerIndex]);
+			Modify Player Variable(Event Player.ViewingMatch, MatchedWith, Remove From Array By Index, Event Player);
+			Modify Player Variable(Event Player.ViewingMatch, MatchedWithHUD, Remove From Array By Index,
+				Event Player.ViewingMatch.TEMPremovingPlayerIndex);
+			"End outlines"
+			Stop Forcing Player Outlines(Event Player, Event Player.ViewingMatch);
+			Stop Forcing Player Outlines(Event Player.ViewingMatch, Event Player);
+			Modify Player Variable(Event Player, MatchedWith, Remove From Array By Value, Event Player.ViewingMatch);
+			Modify Player Variable(Event Player.ViewingMatch, MatchedWith, Remove From Array By Value, Event Player);
+		End;
+		Wait(0.250, Ignore Condition);
+		Wait Until(!Is Button Held(Event Player, Button(Jump)), 4);
+		Call Subroutine(NextMatch);
+		Play Effect(Event Player, Good Pickup Effect, Color(Red), Global.CameraPositions[Event Player.M_Is_Crouching], 1);
+		Play Effect(Event Player, Debuff Impact Sound, Color(White), Event Player, 55);
+		Play Effect(Event Player, Debuff Impact Sound, Color(White), Global.CameraPositions[Event Player.M_Is_Crouching], 55);
+	}
+}
+
+rule("--> Match No Longer Valid")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("Your potential match!");
+		Array Contains(Event Player.PotentialMatches, Event Player.ViewingMatch) != True;
+		Is Button Held(Event Player, Button(Jump)) != True;
+		Event Player.BoolIsReevaluation != True;
+	}
+
+	actions
+	{
+		Wait(0.250, Abort When False);
+		Wait Until(!Is Button Held(Event Player, Button(Jump)), 4);
+		Call Subroutine(NextMatch);
+		Play Effect(Event Player, Good Pickup Effect, Color(Red), Global.CameraPositions[Event Player.M_Is_Crouching], 1);
+		Play Effect(Event Player, Debuff Impact Sound, Color(White), Event Player, 55);
+		Play Effect(Event Player, Debuff Impact Sound, Color(White), Global.CameraPositions[Event Player.M_Is_Crouching], 55);
+	}
+}
+
+rule("--> Stop Viewing / Potential Match")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Event Player.MenuType == Custom String("Your potential match!") || Event Player.MenuType == Custom String("Viewing")) == True;
+		(Is Button Held(Event Player, Button(Crouch)) || (Is Button Held(Event Player, Button(Jump))
+			&& Event Player.MenuType == Custom String("Viewing"))) == True;
+		Event Player.ModToggle == True;
+	}
+
+	actions
+	{
+		Wait(0.100, Abort When False);
+		Event Player.MenuType = 0;
+		Event Player.InAMenu = -1;
+		Call Subroutine(CleanseLastMenu);
+	}
+}
+
+disabled rule("» [MUTE / KICK / BAN] «")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Mute/Unmute")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ultimate)) == True;
+		Is True For Any(Global.MeasureSystemB, Custom String("{0}", Player Closest To Reticle(Event Player, All Teams))
+			== Current Array Element) == False;
+		Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player) == Current Array Element) == False;
+		(Event Player == Host Player || Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player)
+			== Current Array Element)) == True;
+		Event Player.AdminSelection == 2;
+		Event Player.InAMenu == 0;
+		Event Player.Safe == 1;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		(Player Closest To Reticle(Event Player, All Teams).noClipFlags[1] == False) == True;
+	}
+
+	actions
+	{
+		Wait(1, Abort When False);
+		Small Message(Event Player, Custom String("    You are about to mute/unmute {0}.", Player Closest To Reticle(Event Player,
+			All Teams)));
+		If(Player Closest To Reticle(Event Player, All Teams).Mute == 0);
+			Player Closest To Reticle(Event Player, All Teams).Mute = 1;
+			Set Status(Player Closest To Reticle(Event Player, All Teams), Null, Rooted, 9999);
+			Disallow Button(Player Closest To Reticle(Event Player, All Teams), Button(Primary Fire));
+			Disallow Button(Player Closest To Reticle(Event Player, All Teams), Button(Secondary Fire));
+			Disallow Button(Player Closest To Reticle(Event Player, All Teams), Button(Ability 1));
+			Disallow Button(Player Closest To Reticle(Event Player, All Teams), Button(Ability 2));
+			Disable Voice Chat(Player Closest To Reticle(Event Player, All Teams), True, True, True);
+			Disable Text Chat(Player Closest To Reticle(Event Player, All Teams));
+			Small Message(All Players(All Teams), Custom String("    {0} has been muted.", Player Closest To Reticle(Event Player,
+				All Teams)));
+			If(Player Closest To Reticle(Event Player, All Teams).Safe == 0);
+				Player Closest To Reticle(Event Player, All Teams).Safe = 1;
+				Set Damage Dealt(Player Closest To Reticle(Event Player, All Teams), 0);
+				Play Effect(All Players(All Teams), Good Pickup Effect, Color(Green), Player Closest To Reticle(Event Player, All Teams), 1);
+				Play Effect(All Players(All Teams), Buff Explosion Sound, Color(Green), Player Closest To Reticle(Event Player, All Teams), 55);
+				Small Message(Player Closest To Reticle(Event Player, All Teams), Custom String("    Enjoy your mute! :D"));
+			Else;
+				Player Closest To Reticle(Event Player, All Teams).Safe = 1;
+				Set Damage Dealt(Player Closest To Reticle(Event Player, All Teams), 0);
+				Play Effect(All Players(All Teams), Good Pickup Effect, Color(Green), Player Closest To Reticle(Event Player, All Teams), 1);
+				Play Effect(All Players(All Teams), Buff Explosion Sound, Color(Green), Player Closest To Reticle(Event Player, All Teams), 55);
+				Small Message(Player Closest To Reticle(Event Player, All Teams), Custom String("    Enjoy your mute! :D"));
+			End;
+		Else;
+			Player Closest To Reticle(Event Player, All Teams).Mute = 0;
+			Enable Voice Chat(Player Closest To Reticle(Event Player, All Teams));
+			Enable Text Chat(Player Closest To Reticle(Event Player, All Teams));
+			Set Status(Player Closest To Reticle(Event Player, All Teams), Null, Phased Out, 9999);
+			Small Message(All Players(All Teams), Custom String("    {0} has been UnMuted.", Player Closest To Reticle(Event Player,
+				All Teams)));
+			Play Effect(All Players(All Teams), Good Pickup Effect, Color(Green), Player Closest To Reticle(Event Player, All Teams), 1);
+			Play Effect(All Players(All Teams), Buff Explosion Sound, Color(Green), Player Closest To Reticle(Event Player, All Teams), 55);
+			Small Message(Player Closest To Reticle(Event Player, All Teams), Custom String("    Safe un-mute mode disabled."));
+			Clear Status(Player Closest To Reticle(Event Player, All Teams), Rooted);
+			Allow Button(Player Closest To Reticle(Event Player, All Teams), Button(Primary Fire));
+			Allow Button(Player Closest To Reticle(Event Player, All Teams), Button(Secondary Fire));
+			Allow Button(Player Closest To Reticle(Event Player, All Teams), Button(Ability 1));
+			Allow Button(Player Closest To Reticle(Event Player, All Teams), Button(Ability 2));
+			Play Effect(Event Player, Buff Impact Sound, Color(White), Event Player, 55);
+	}
+}
+
+rule("Mute/Unmute Brute")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player) == Current Array Element) == True;
+		Is Button Held(Event Player, Button(Ultimate)) == True;
+		Event Player.AdminSelection == 2;
+		Event Player.InAMenu == 0;
+		Event Player.Safe == 1;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		(Player Closest To Reticle(Event Player, All Teams).noClipFlags[1] == False) == True;
+	}
+
+	actions
+	{
+		Wait(1, Abort When False);
+		Small Message(Event Player, Custom String("    You are about to mute/unmute {0}.", Player Closest To Reticle(Event Player,
+			All Teams)));
+		If(Player Closest To Reticle(Event Player, All Teams).Mute == 0);
+			Player Closest To Reticle(Event Player, All Teams).Mute = 1;
+			Set Status(Player Closest To Reticle(Event Player, All Teams), Null, Rooted, 9999);
+			Disallow Button(Player Closest To Reticle(Event Player, All Teams), Button(Primary Fire));
+			Disallow Button(Player Closest To Reticle(Event Player, All Teams), Button(Secondary Fire));
+			Disallow Button(Player Closest To Reticle(Event Player, All Teams), Button(Ability 1));
+			Disallow Button(Player Closest To Reticle(Event Player, All Teams), Button(Ability 2));
+			Disable Voice Chat(Player Closest To Reticle(Event Player, All Teams), True, True, True);
+			Disable Text Chat(Player Closest To Reticle(Event Player, All Teams));
+			Small Message(All Players(All Teams), Custom String("    {0} has been muted.", Player Closest To Reticle(Event Player,
+				All Teams)));
+			If(Player Closest To Reticle(Event Player, All Teams).Safe == 0);
+				Player Closest To Reticle(Event Player, All Teams).Safe = 1;
+				Set Damage Dealt(Player Closest To Reticle(Event Player, All Teams), 0);
+				Play Effect(All Players(All Teams), Good Pickup Effect, Color(Green), Player Closest To Reticle(Event Player, All Teams), 1);
+				Play Effect(All Players(All Teams), Buff Explosion Sound, Color(Green), Player Closest To Reticle(Event Player, All Teams), 55);
+				Small Message(Player Closest To Reticle(Event Player, All Teams), Custom String("Enjoy your mute! :D"));
+			Else;
+				Player Closest To Reticle(Event Player, All Teams).Safe = 1;
+				Set Damage Dealt(Player Closest To Reticle(Event Player, All Teams), 0);
+				Play Effect(All Players(All Teams), Good Pickup Effect, Color(Green), Player Closest To Reticle(Event Player, All Teams), 1);
+				Play Effect(All Players(All Teams), Buff Explosion Sound, Color(Green), Player Closest To Reticle(Event Player, All Teams), 55);
+				Small Message(Player Closest To Reticle(Event Player, All Teams), Custom String("Enjoy your mute! :D"));
+			End;
+		Else;
+			Player Closest To Reticle(Event Player, All Teams).Mute = 0;
+			Enable Voice Chat(Player Closest To Reticle(Event Player, All Teams));
+			Enable Text Chat(Player Closest To Reticle(Event Player, All Teams));
+			Set Status(Player Closest To Reticle(Event Player, All Teams), Null, Phased Out, 9999);
+			Small Message(All Players(All Teams), Custom String("    {0} has been UnMuted.", Player Closest To Reticle(Event Player,
+				All Teams)));
+			Play Effect(All Players(All Teams), Good Pickup Effect, Color(Green), Player Closest To Reticle(Event Player, All Teams), 1);
+			Play Effect(All Players(All Teams), Buff Explosion Sound, Color(Green), Player Closest To Reticle(Event Player, All Teams), 55);
+			Small Message(Player Closest To Reticle(Event Player, All Teams), Custom String("    Safe un-mute mode disabled."));
+			Clear Status(Player Closest To Reticle(Event Player, All Teams), Rooted);
+			Allow Button(Player Closest To Reticle(Event Player, All Teams), Button(Primary Fire));
+			Allow Button(Player Closest To Reticle(Event Player, All Teams), Button(Secondary Fire));
+			Allow Button(Player Closest To Reticle(Event Player, All Teams), Button(Ability 1));
+			Allow Button(Player Closest To Reticle(Event Player, All Teams), Button(Ability 2));
+			Play Effect(Event Player, Buff Impact Sound, Color(White), Event Player, 55);
+	}
+}
+
+rule("Kick")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ultimate)) == True;
+		Is True For Any(Global.MeasureSystemB, Custom String("{0}", Player Closest To Reticle(Event Player, All Teams))
+			== Current Array Element) == False;
+		Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player) == Current Array Element) == False;
+		(Event Player == Host Player || Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player)
+			== Current Array Element)) == True;
+		Event Player.AdminSelection == 3;
+		Event Player.InAMenu == 0;
+		Event Player.Safe == 1;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+	}
+
+	actions
+	{
+		Event Player.TargetPlayer = Player Closest To Reticle(Event Player, All Teams);
+		Wait(1, Abort When False);
+		Small Message(Event Player, Custom String("    Kicking {0}...", Event Player.TargetPlayer));
+		Big Message(All Players(All Teams), Custom String("{0} has been kicked from the lobby.", Event Player.TargetPlayer));
+		Remove Player(Event Player.TargetPlayer);
+		Play Effect(Event Player, Good Pickup Effect, Color(Green), Global.CameraPositions[Event Player.M_Is_Crouching], 1);
+		Play Effect(Event Player, Buff Impact Sound, Color(White), Event Player, 55);
+		Wait(0.100, Ignore Condition);
+		Event Player.TargetPlayer = Null;
+		Event Player.GravGunVariables[1].GravGunVariables[2] = False;
+		Stop Forcing Player Position(Event Player.GravGunVariables[1]);
+		Set Gravity(Event Player.GravGunVariables[1], 100);
+		Stop Accelerating(Event Player.GravGunVariables[1]);
+		Event Player.GravGunVariables[0] = False;
+		Event Player.GravGunVariables[1] = Null;
+		Event Player.GravGunVariables[3] = Null;
+	}
+}
+
+rule("Kick Brute")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ultimate)) == True;
+		Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player) == Current Array Element) == True;
+		Event Player.AdminSelection == 3;
+		Event Player.InAMenu == 0;
+		Event Player.Safe == 1;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+	}
+
+	actions
+	{
+		Event Player.TargetPlayer = Player Closest To Reticle(Event Player, All Teams);
+		Wait(1, Abort When False);
+		Small Message(Event Player, Custom String("    Kicking {0}...", Event Player.TargetPlayer));
+		Big Message(All Players(All Teams), Custom String("{0} has been kicked from the lobby.", Event Player.TargetPlayer));
+		Remove Player(Event Player.TargetPlayer);
+		Play Effect(Event Player, Good Pickup Effect, Color(Green), Global.CameraPositions[Event Player.M_Is_Crouching], 1);
+		Play Effect(Event Player, Buff Impact Sound, Color(White), Event Player, 55);
+		Wait(0.100, Ignore Condition);
+		Event Player.TargetPlayer = Null;
+		Event Player.GravGunVariables[1].GravGunVariables[2] = False;
+		Stop Forcing Player Position(Event Player.GravGunVariables[1]);
+		Set Gravity(Event Player.GravGunVariables[1], 100);
+		Stop Accelerating(Event Player.GravGunVariables[1]);
+		Event Player.GravGunVariables[0] = False;
+		Event Player.GravGunVariables[1] = Null;
+		Event Player.GravGunVariables[3] = Null;
+	}
+}
+
+rule("Banned")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is True For Any(Global.MeasureListD, Custom String("{0}", Event Player) == Current Array Element) == True;
+	}
+
+	actions
+	{
+		Remove Player(Event Player);
+	}
+}
+
+rule("Ban Cancelled")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(!Is Button Held(Event Player, Button(Ultimate)) || Event Player.InAMenu != 0) == True;
+		Event Player.BanProgress > 0;
+		(Event Player == Host Player || Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player)
+			== Current Array Element)) == True;
+	}
+
+	actions
+	{
+		Event Player.BanProgress = 0;
+	}
+}
+
+rule("Banned Underage")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.Age <= 17;
+	}
+
+	actions
+	{
+		If(Workshop Setting Toggle(Custom String("Privacy"), Custom String(
+			"Underage Players Banned. (Makes underage players get banned from the lobby)"), False, 0) == True);
+			Event Player.BanProgress = 3;
+			Chase Player Variable Over Time(Event Player, BanProgress, 0, 3, Destination and Duration);
+			Event Player.Banning = Event Player;
+			Wait(3, Abort When False);
+			Modify Global Variable(MeasureListD, Append To Array, Custom String("{0}", Event Player.Banning));
+			Play Effect(Event Player, Good Pickup Effect, Color(Green), Global.CameraPositions[Event Player.M_Is_Crouching], 1);
+			Play Effect(Event Player, Buff Impact Sound, Color(White), Event Player, 55);
+			Play Effect(Event Player, Buff Impact Sound, Color(White), Global.CameraPositions[Event Player.M_Is_Crouching], 55);
+	}
+}
+
+rule("Ban")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ultimate)) == True;
+		Is True For Any(Global.MeasureSystemB, Custom String("{0}", Player Closest To Reticle(Event Player, All Teams))
+			== Current Array Element) == False;
+		Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player) == Current Array Element) == False;
+		(Event Player == Host Player || Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player)
+			== Current Array Element)) == True;
+		Event Player.AdminSelection == 4;
+		Event Player.InAMenu == 0;
+		Event Player.Safe == 1;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+	}
+
+	actions
+	{
+		Event Player.TargetPlayer = Player Closest To Reticle(Event Player, All Teams);
+		Event Player.BanProgress = 2;
+		Chase Player Variable Over Time(Event Player, BanProgress, 0, 2, Destination and Duration);
+		Event Player.Banning = Player Closest To Reticle(Event Player, All Teams);
+		Wait(2, Abort When False);
+		Small Message(Event Player, Custom String("    Banning {0}... | This action can't be undone.", Player Closest To Reticle(
+			Event Player, All Teams)));
+		Play Effect(Event Player, Buff Impact Sound, Color(White), Event Player, 55);
+		Small Message(Player Closest To Reticle(Event Player, All Teams), Custom String("    Ready to never come back? ;)"));
+		Play Effect(All Players(All Teams), Debuff Impact Sound, Color(White), Event Player.TargetPlayer, 50);
+		Big Message(All Players(All Teams), Custom String("{0} has been summoned by the ban council.", Event Player.TargetPlayer));
+		Apply Impulse(Event Player.TargetPlayer, Vector(0, 10000, 0), 70, To World, Cancel Contrary Motion);
+		Disable Movement Collision With Environment(Event Player.TargetPlayer, False);
+		Wait(0.150, Ignore Condition);
+		Play Effect(All Players(All Teams), Good Explosion, Color(Red), Event Player.TargetPlayer, 15);
+		Wait(0.150, Ignore Condition);
+		Modify Global Variable(MeasureListD, Append To Array, Custom String("{0}", Event Player.Banning));
+		Event Player.TargetPlayer = Null;
+	}
+}
+
+rule("Ban Brute")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player) == Current Array Element) == True;
+		Is Button Held(Event Player, Button(Ultimate)) == True;
+		Event Player.AdminSelection == 4;
+		Event Player.InAMenu == 0;
+		Event Player.Safe == 1;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+	}
+
+	actions
+	{
+		Event Player.TargetPlayer = Player Closest To Reticle(Event Player, All Teams);
+		Event Player.BanProgress = 2;
+		Chase Player Variable Over Time(Event Player, BanProgress, 0, 2, Destination and Duration);
+		Event Player.Banning = Player Closest To Reticle(Event Player, All Teams);
+		Wait(2, Abort When False);
+		Small Message(Event Player, Custom String(
+			"    Banning {0}... | I don't think I need to tell you what it does, I mean, you're a Brute Force Admin lmao.",
+			Player Closest To Reticle(Event Player, All Teams)));
+		Play Effect(Event Player, Buff Impact Sound, Color(White), Event Player, 55);
+		Small Message(Player Closest To Reticle(Event Player, All Teams), Custom String("    Ready to never come back? ;)"));
+		Play Effect(All Players(All Teams), Debuff Impact Sound, Color(White), Event Player.TargetPlayer, 50);
+		Big Message(All Players(All Teams), Custom String("{0} has been summoned by the ban council.", Event Player.TargetPlayer));
+		Apply Impulse(Event Player.TargetPlayer, Vector(0, 10000, 0), 70, To World, Cancel Contrary Motion);
+		Disable Movement Collision With Environment(Event Player.TargetPlayer, False);
+		Wait(0.150, Ignore Condition);
+		Play Effect(All Players(All Teams), Good Explosion, Color(Red), Event Player.TargetPlayer, 15);
+		Wait(0.150, Ignore Condition);
+		Modify Global Variable(MeasureListD, Append To Array, Custom String("{0}", Event Player.Banning));
+		Event Player.TargetPlayer = Null;
+	}
+}
+
+disabled rule("» [FUNCTIONS] «")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Welcome Message")
+{
+	event
+	{
+		Player Joined Match;
+		All;
+		All;
+	}
+
+	actions
+	{
+		Wait Until(Has Spawned(Event Player), 99999);
+		Small Message(All Players(All Teams), Custom String("    Welcome {0} {1}!", Event Player, Hero Icon String(Hero Of(
+			Event Player))));
+	}
+}
+
+rule("LF -> START")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("LookingForMenu");
+		Is Button Held(Event Player, Button(Interact)) == True;
+	}
+
+	actions
+	{
+		Call Subroutine(CleanseLastMenu);
+		Event Player.MenuType = 0;
+		Event Player.InAMenu = -1;
+		Wait(0.016, Ignore Condition);
+		Event Player.MenuType = Custom String("StartMenu");
+	}
+}
+
+rule("Without Profile")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("StartMenu");
+		Is Button Held(Event Player, Button(Jump)) == True;
+		Event Player.MenuCursorIndex == 0;
+	}
+
+	actions
+	{
+		Event Player.SmallProfile = 1;
+		Call Subroutine(CleanseLastMenu);
+		Event Player.MenuType = 0;
+		Event Player.InAMenu = -1;
+		Wait(0.016, Ignore Condition);
+		Event Player.MenuType = Custom String("Linear");
+	}
+}
+
+rule("[PROFILE FINISHED] Get Potential Matches")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.ProfileCompleteBool == True;
+		Event Player.Status != 2;
+		Event Player.Status != 5;
+		Event Player.Status != 6;
+		Event Player.Status != 8;
+	}
+
+	actions
+	{
+		Create HUD Text(Filtered Array(Event Player, Event Player.InAMenu == 0), Null, Custom String("»»—— Potential Matches: {0} ——-««",
+			Count Of(Event Player.PotentialMatches), Input Binding String(Button(Interact)), Input Binding String(Button(Crouch))), Null,
+			Right, 1, Color(White), Count Of(Event Player.PotentialMatches) > 0 ? Color(Green) : Color(Gray), Null,
+			Visible To String and Color, Default Visibility);
+		Create HUD Text(Filtered Array(Event Player, Event Player.InAMenu == 0), Null, Custom String("PRESS [Crouch + {1}]\r\n{0}",
+			Custom String("Player Profile [{1}]", Null, Input Binding String(Button(Interact))), Input Binding String(Button(Interact)),
+			Input Binding String(Button(Crouch))), Null, Right, 1.200, Color(White), Count Of(Event Player.PotentialMatches) > 0 ? Color(
+			Green) : Color(Gray), Null, Visible To String and Color, Default Visibility);
+		Create HUD Text(Filtered Array(Event Player, Event Player.InAMenu == 0), Null, Custom String(
+			"｡:*•.————-  Your Matches  ————-.•*:｡", Count Of(Event Player.PotentialMatches), Input Binding String(Button(Interact)),
+			Input Binding String(Button(Crouch))), Null, Right, 2, Color(White), Color(Green), Null, Visible To String and Color,
+			Default Visibility);
+		"Likes Men"
+		If(Event Player.Sexuality == 1);
+			Event Player.WantsToSeeGenders = Array(1);
+		"Likes Women"
+		Else If(Event Player.Sexuality == 2);
+			Event Player.WantsToSeeGenders = Array(2, 4);
+		"Bisexual"
+		Else If(Event Player.Sexuality == 3);
+			Event Player.WantsToSeeGenders = Array(1, 2);
+		"Likes Puzees"
+		Else If(Event Player.Sexuality == 4);
+			Event Player.WantsToSeeGenders = Array(2, 4);
+		"Pansexual"
+		Else;
+			Event Player.WantsToSeeGenders = Array(1, 2, 3, 4);
+		End;
+		"All others with done profile"
+		Event Player.PotentialMatches = Remove From Array(Filtered Array(All Players(All Teams),
+			Current Array Element.ProfileCompleteBool), Event Player);
+		"All others with desired gender"
+		Event Player.PotentialMatches = Filtered Array(Event Player.PotentialMatches, Array Contains(Event Player.WantsToSeeGenders,
+			Current Array Element.Moderator));
+		"All others that desire event player's gender"
+		Event Player.PotentialMatches = Filtered Array(Event Player.PotentialMatches, Array Contains(
+			Current Array Element.WantsToSeeGenders, Event Player.Moderator));
+		"Over/under 18 seperate"
+		If(Event Player.Age >= 18);
+			Event Player.PotentialMatches = Filtered Array(Event Player.PotentialMatches, Current Array Element.Age >= 18);
+		Else;
+			Event Player.PotentialMatches = Filtered Array(Event Player.PotentialMatches, Current Array Element.Age < 18);
+		End;
+		"Remove taken users"
+		Event Player.PotentialMatches = Filtered Array(Event Player.PotentialMatches,
+			Current Array Element.Status != 2 && Current Array Element.Status != 5 && Current Array Element.Status != 6 && Current Array Element.Status != 8);
+		Event Player.TEMPindex = 0;
+		"Add self to all users potentially matchable with"
+		While(Event Player.TEMPindex < Count Of(Event Player.PotentialMatches));
+			Modify Player Variable(Event Player.PotentialMatches[Event Player.TEMPindex], PotentialMatches, Append To Array, Event Player);
+			Event Player.TEMPindex += 1;
+		End;
+		Small Message(Event Player, Custom String("    You have {0} potential matches! PRESS [Crouch + {2}.]", Count Of(
+			Event Player.PotentialMatches), Input Binding String(Button(Crouch)), Input Binding String(Button(Interact))));
+		Small Message(Event Player.PotentialMatches, Custom String("    New potential match! PRESS [Crouch + {0}.]", Input Binding String(
+			Button(Interact)), Input Binding String(Button(Crouch))));
+	}
+}
+
+rule("[POTENTIAL MATCH] No Longer In Game")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Count Of(Filtered Array(Event Player.PotentialMatches, !Array Contains(All Players(All Teams), Current Array Element))) > 0;
+		Event Player.ProfileCompleteBool == True;
+	}
+
+	actions
+	{
+		Modify Player Variable(Event Player, PotentialMatches, Remove From Array By Value, First Of(Filtered Array(
+			Event Player.PotentialMatches, !Array Contains(All Players(All Teams), Current Array Element))));
+		Wait(0.016, Ignore Condition);
+		Loop If Condition Is True;
+	}
+}
+
+rule("[Match Left] Destroy HUD")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.ProfileCompleteBool == True;
+		Count Of(Filtered Array(Event Player.MatchedWith, !Array Contains(All Players(All Teams), Current Array Element))) > 0;
+	}
+
+	actions
+	{
+		Event Player.TEMPremovingPlayerIndex = Index Of Array Value(Event Player.MatchedWith, First Of(Filtered Array(
+			Event Player.MatchedWith, !Array Contains(All Players(All Teams), Current Array Element))));
+		Destroy HUD Text(Event Player.MatchedWithHUD[Event Player.TEMPremovingPlayerIndex]);
+		Modify Player Variable(Event Player, MatchedWith, Remove From Array By Index, Event Player.TEMPremovingPlayerIndex);
+		Modify Player Variable(Event Player, MatchedWithHUD, Remove From Array By Index, Event Player.TEMPremovingPlayerIndex);
+		Wait(0.016, Ignore Condition);
+		Loop If Condition Is True;
+	}
+}
+
+rule("View Matches")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.ProfileCompleteBool == True;
+		Count Of(Event Player.PotentialMatches) > 0;
+		Is Button Held(Event Player, Button(Interact)) == True;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		Event Player.InAMenu == 0;
+		Event Player.Mute == 0;
+	}
+
+	actions
+	{
+		Event Player.BoolIsReevaluation = False;
+		Event Player.MenuType = Custom String("Your potential match!");
+		Event Player.ViewingMatch = First Of(Event Player.PotentialMatches);
+		Wait(0.250, Ignore Condition);
+		Press Button(Event Player, Button(Crouch));
+	}
+}
+
+rule("Inspect Player")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.ProfileCompleteBool == True;
+		Event Player.InAMenu == 0;
+		Is Button Held(Event Player, Button(Interact)) == True;
+		Is Button Held(Event Player, Button(Crouch)) != True;
+		Event Player.Mute == 0;
+		Event Player.noClipFlags[1] == False;
+	}
+
+	actions
+	{
+		Event Player.ViewingMatch = Player Closest To Reticle(Event Player, All Teams);
+		"Self"
+		If(!Is In Line of Sight(Eye Position(Event Player), Eye Position(Event Player.ViewingMatch), Barriers Do Not Block LOS)
+			|| !Array Contains(Players in View Angle(Event Player, All Teams, 30), Event Player.ViewingMatch));
+			Event Player.MenuType = Custom String("Viewing");
+			Event Player.ViewingMatch = Event Player;
+		"Other Player"
+		Else;
+			Abort If(Event Player.ViewingMatch.ProfileCompleteBool != True);
+			If(Array Contains(Event Player.MatchedWith, Event Player.ViewingMatch));
+				Event Player.BoolIsReevaluation = True;
+				Event Player.MenuType = Custom String("Your potential match!");
+			Else;
+				Event Player.MenuType = Custom String("Viewing");
+			End;
+		End;
+	}
+}
+
+rule("Lobby Host Info")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Create HUD Text(All Players(All Teams), Null, Custom String("'*~-.,¸¸.-~·*'¨¯¯ Lobby Host ¯¯¨'*·~-.¸¸,.-~*'"), Null, Right, 0,
+			Color(White), Custom Color(255, 105, 180, 255), Color(White), Visible To and String, Default Visibility);
+		Create HUD Text(All Players(All Teams), Null, Null, Custom String("{0} {1} {0}", Ability Icon String(Hero Of(Host Player), Button(
+			Ultimate)), Host Player), Right, 0.100, Color(White), Color(White), Color(Orange), Visible To and String, Default Visibility);
+	}
+}
+
+rule("Linear: Return to previous")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Event Player.MenuType == Custom String("Linear") || Event Player.MenuType == Custom String("Traits")
+			|| Event Player.MenuType == Custom String("Desired Traits")) == True;
+		Event Player.LinearStage > 0;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		Event Player.ModToggle == 1;
+		Event Player.LinearStage > 0;
+		Event Player.LIneTargetPos != True;
+		Event Player.SmallProfile == 1;
+	}
+
+	actions
+	{
+		Event Player.LinearStage -= 1;
+		Wait(0.100, Ignore Condition);
+		Press Button(Event Player, Button(Crouch));
+	}
+}
+
+rule("Linear: Small Progress")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("Linear");
+		Is Button Held(Event Player, Button(Jump)) == True;
+		Event Player.ModToggle == 1;
+		(Event Player.SmallProfile == 1) == True;
+	}
+
+	actions
+	{
+		Wait(0.050, Abort When False);
+		If(Event Player.LinearStage == 0);
+			Event Player.LinearStage += 1;
+		Else If(Event Player.LinearStage == 1 && Event Player.Moderator != 0);
+			Event Player.LinearStage += 1;
+		Else If(Event Player.LinearStage == 2 && Event Player.Pronouns != 0);
+			Event Player.LinearStage += 1;
+		Else If(Event Player.LinearStage == 3 && Event Player.Title != 0);
+			Event Player.LinearStage += 1;
+		Else If(Event Player.LinearStage == 4 && Event Player.Sexuality != 0);
+			Event Player.LinearStage += 1;
+		Else If(Event Player.LinearStage == 5 && Event Player.Status != 0);
+			Event Player.LIneTargetPos = True;
+			Call Subroutine(CleanseLastMenu);
+			Event Player.MenuType = 0;
+			Event Player.InAMenu = -1;
+			Event Player.ProfileCompleteBool = True;
+			Destroy Effect(Event Player.MakingProfileSparkles);
+		End;
+	}
+}
+
+rule("Back to linear from profile")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("My Profile");
+		Event Player.ModToggle == 1;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+	}
+
+	actions
+	{
+		Wait(0.100, Abort When False);
+		Event Player.MenuType = Custom String("Linear");
+		Event Player.LIneTargetPos = 0;
+		Wait(0.100, Ignore Condition);
+		Press Button(Event Player, Button(Crouch));
+	}
+}
+
+rule("Change Hero")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.Safe == 1;
+		Event Player.InAMenu == 0;
+		Is Button Held(Event Player, Button(Reload)) == False;
+		Is Button Held(Event Player, Button(Interact)) == False;
+		Is Button Held(Event Player, Button(Crouch)) == False;
+		Is Button Held(Event Player, Button(Jump)) == False;
+		Is Button Held(Event Player, Button(Melee)) == True;
+		Event Player.noClipFlags[1] == False;
+	}
+
+	actions
+	{
+		Wait(0.450, Abort When False);
+		Event Player.HeroChangePos = Position Of(Event Player);
+		Event Player.ChangingHero = True;
+		Wait(0.016, Ignore Condition);
+		Set Player Allowed Heroes(Event Player, Remove From Array(All Heroes, Hero Of(Event Player)));
+		Wait(0.500, Ignore Condition);
+		Reset Player Hero Availability(Event Player);
+		Wait Until(Has Spawned(Event Player), 10000000000.000);
+		Teleport(Event Player, Event Player.HeroChangePos);
+		Wait(0.016, Ignore Condition);
+		Event Player.HeroChangePos = False;
+		Event Player.ChangingHero = False;
+		Set Ability 1 Enabled(Event Player, True);
+	}
+}
+
+rule("Look down disable")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.InAMenu == 1;
+	}
+
+	actions
+	{
+		Call Subroutine(EvaluateButtons);
+	}
+}
+
+rule("Safe toggle")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.InAMenu == 0;
+		Event Player.Mute == 0;
+		Is Button Held(Event Player, Button(Reload)) == True;
+		Is Button Held(Event Player, Button(Interact)) == False;
+		Is Button Held(Event Player, Button(Ultimate)) == False;
+		Is Button Held(Event Player, Button(Melee)) == False;
+		Vertical Facing Angle Of(Event Player) > -80;
+		Has Status(Event Player, Asleep) == False;
+	}
+
+	actions
+	{
+		Wait(0.250, Abort When False);
+		Small Message(Event Player, Custom String("    Switching mode..."));
+		Wait(0.150, Abort When False);
+		If(Event Player.Safe == 0);
+			Event Player.Safe = 1;
+			Set Status(Event Player, Null, Phased Out, 9999);
+			Set Damage Dealt(Event Player, 0);
+			Play Effect(All Players(All Teams), Good Pickup Effect, Color(Green), Event Player, 1);
+			Play Effect(All Players(All Teams), Buff Explosion Sound, Color(Green), Event Player, 55);
+			Small Message(Event Player, Custom String("    {0} Safe mode enabled. {0}", Ability Icon String(Hero(Baptiste), Button(
+				Ability 2))));
+		Else;
+			Event Player.Safe = 0;
+			Clear Status(Event Player, Phased Out);
+			Set Damage Dealt(Event Player, 100);
+			Play Effect(All Players(All Teams), Good Pickup Effect, Color(Red), Event Player, 1);
+			Play Effect(All Players(All Teams), Debuff Impact Sound, Color(Red), Event Player, 55);
+			Small Message(Event Player, Custom String("    {0} pvp mode enabled. {0}", Icon String(Skull)));
+		End;
+	}
+}
+
+rule("Cursor Index End")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.ProfileCompleteBool == True;
+	}
+
+	actions
+	{
+		Event Player.MenuCursorIndex = 0;
+		Event Player.Offset_Woo = 0;
+		Event Player.MenuMake = 0;
+	}
+}
+
+rule("Teleport Players")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Is Button Held(Event Player, Button(Ultimate)) || Is Button Held(Event Player, Button(Reload))) == True;
+		Event Player.AdminSelection == 0;
+		(Event Player == Host Player || Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player)
+			== Current Array Element) || Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player)
+			== Current Array Element)) == True;
+		Event Player.InAMenu == 0;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		(Player Closest To Reticle(Event Player, All Teams).noClipFlags[1] == False) == True;
+	}
+
+	actions
+	{
+		Wait(0.016, Abort When False);
+		If(Is Button Held(Event Player, Button(Ultimate)) == True);
+			Small Message(Event Player, Custom String("    You are about to teleport {0}", Player Closest To Reticle(Event Player,
+				All Teams)));
+			Teleport(Player Closest To Reticle(Event Player, All Teams), Event Player);
+			Play Effect(All Players(All Teams), Ring Explosion, Color(Green), Event Player, 1);
+			Play Effect(All Players(All Teams), Debuff Impact Sound, Color(Green), Event Player, 55);
+			Small Message(Player Closest To Reticle(Event Player, All Teams), Custom String("    You have been teleported to {0}",
+				Event Player));
+		Else If(Is Button Held(Event Player, Button(Reload)) == True);
+			Small Message(Event Player, Custom String("    You being teleported to {0}", Player Closest To Reticle(Event Player, All Teams)));
+			Teleport(Event Player, Player Closest To Reticle(Event Player, All Teams));
+			Play Effect(All Players(All Teams), Ring Explosion, Color(Green), Event Player, 1);
+			Play Effect(All Players(All Teams), Debuff Impact Sound, Color(Green), Event Player, 55);
+			Small Message(Player Closest To Reticle(Event Player, All Teams), Custom String("    {0} teleported to you.", Event Player));
+		End;
+	}
+}
+
+rule("Exit App")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("AppearanceMenu");
+		Is Button Held(Event Player, Button(Crouch)) == True;
+	}
+
+	actions
+	{
+		Event Player.MenuType = 0;
+		Event Player.InAMenu = -1;
+		Call Subroutine(CleanseLastMenu);
+	}
+}
+
+disabled rule("» [CUSTOM HERO ABILITIES] «")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+disabled rule("» [NOCLIP] «")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("NOCLIP")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Melee)) == True;
+		Event Player.InAMenu == 0;
+		Vertical Facing Angle Of(Event Player) < -80;
+		Event Player.noClipFlags[0] == True;
+	}
+
+	actions
+	{
+		Event Player._NoClip = !Event Player._NoClip;
+		Event Player.noClipFlags[1] = True;
+		Small Message(Event Player, Custom String("    NoClip [{0}]", Event Player._NoClip));
+		Start Forcing Player Position(Event Player, Position Of(Event Player) + (Up * (Is Button Held(Event Player, Button(Jump))
+			- Is Button Held(Event Player, Button(Crouch))) + World Vector Of(Throttle Of(Event Player), Event Player, Rotation))
+			* Workshop Setting Real(Custom String("Developer Noclip"), Custom String("NoClip speed"), 0.500, 0.100, 1, 0), True);
+		Abort If(Event Player._NoClip);
+		Stop Forcing Player Position(Event Player);
+		Event Player.noClipFlags[1] = False;
+	}
+}
+
+disabled rule("» [CUSTOM SIZES] «")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Scale Size")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.Progress_Lock == False;
+		Is Button Held(Event Player, Button(Reload)) == True;
+		Event Player.Safe == 1;
+		Event Player.MenuType == Custom String("SizeMenu");
+	}
+
+	actions
+	{
+		Event Player.Scale_Prev = 1;
+		Event Player.Scale_Real = 1;
+		Stop Scaling Player(Event Player);
+		Event Player.Player_Modification[4] = Event Player.Scale_Real * 100;
+		Set Max Health(Event Player, Event Player.Player_Modification[4]);
+		Set Move Speed(Event Player, Event Player.Player_Modification[4]);
+		Set Jump Vertical Speed(Event Player, Event Player.Player_Modification[4]);
+		Wait(0.100, Ignore Condition);
+		Heal(Event Player, Null, 12000);
+		Play Effect(All Players(All Teams), Bad Pickup Effect, Color(Yellow), Event Player, 1);
+		Event Player.MenuType = 0;
+		Event Player.InAMenu = -1;
+		Event Player.TargetPlayer = Null;
+		Call Subroutine(CleanseLastMenu);
+	}
+}
+
+rule("Scaling Size")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.Progress_Lock == False;
+		Is Button Held(Event Player, Button(Ultimate)) == True;
+		Event Player.Safe == 1;
+		Event Player.MenuType == Custom String("SizeMenu");
+	}
+
+	actions
+	{
+		Call Subroutine(Scale_Progress);
+		Event Player.MenuType = 0;
+		Event Player.InAMenu = -1;
+		Event Player.TargetPlayer = Null;
+		Call Subroutine(CleanseLastMenu);
+	}
+}
+
+rule("Abort Scaling")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.Signal == True;
+		Event Player.Progress_Lock == True;
+	}
+
+	actions
+	{
+		Event Player.Signal = False;
+		If(Is Button Held(Event Player, Button(Primary Fire)) || Is Button Held(Event Player, Button(Secondary Fire)) || Is Button Held(
+			Event Player, Button(Reload)));
+			Event Player.Progress_Stop = True;
+			Wait(0.100, Ignore Condition);
+			Event Player.Progress_Stop = False;
+		End;
+	}
+}
+
+rule("Menu Keys Signal")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Is Button Held(Event Player, Button(Primary Fire)) || Is Button Held(Event Player, Button(Secondary Fire)) || Is Button Held(
+			Event Player, Button(Reload)) || Is Button Held(Event Player, Button(Ultimate)) || Is Button Held(Event Player, Button(
+			Ability 1)) || Is Button Held(Event Player, Button(Ability 2)) || Is Button Held(Event Player, Button(Melee))) == True;
+		Event Player.MenuType == Custom String("SizeMenu");
+	}
+
+	actions
+	{
+		Event Player.Signal = True;
+	}
+}
+
+rule("Exit Size")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.MenuType == Custom String("SizeMenu");
+		Is Button Held(Event Player, Button(Crouch)) == True;
+	}
+
+	actions
+	{
+		Event Player.MenuType = 0;
+		Event Player.InAMenu = -1;
+		Call Subroutine(CleanseLastMenu);
+	}
+}
+
+disabled rule("» [TITLES] «")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Template Titles")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		disabled Is True For Any(Global.TitlesList, Custom String("{0}", Event Player) == Current Array Element) == False;
+		(Event Player.Title != 1) == True;
+		Event Player.ProfileCompleteBool == True;
+	}
+
+	actions
+	{
+		If(Event Player.Title != 59);
+			Create In-World Text(All Players(All Teams), Global.Titles[Event Player.Title], Event Player, 1, Clip Against Surfaces,
+				Visible To Position String and Color, Global.Rainbow_Color, Default Visibility);
+		Else;
+			Create In-World Text(All Players(All Teams), Global.CrazyTitle, Event Player, 1, Clip Against Surfaces,
+				Visible To Position String and Color, Global.Rainbow_Color, Default Visibility);
+	}
+}
+
+rule("Developer Title List")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.ProfileCompleteBool == True;
+		(Custom String("{0}", Event Player) == Custom String("Siegreich") || Custom String("{0}", Event Player) == Custom String("moeime"))
+			== True;
+	}
+
+	actions
+	{
+		If(Custom String("{0}", Event Player) == Custom String("Siegreich"));
+			Create In-World Text(All Players(All Teams), Custom String("Developer{2}{2}", Null, Null, Global.BaseLine), Event Player, 1,
+				Clip Against Surfaces, Visible To Position String and Color, Color(Red), Default Visibility);
+	}
+}
+
+rule("Title Search")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.ProfileCompleteBool == True;
+		(Event Player.Title == 1) == True;
+		Event Player.GivenTitle == False;
+	}
+
+	actions
+	{
+		Wait(0.016, Ignore Condition);
+		For Global Variable(Players_Global_Array, 0, Count Of(Global.Titles_And_Outlines), 1);
+			For Global Variable(Each_Player_Array, 0, 3, 1);
+				If(Custom String("{0}", Event Player) == Global.Titles_And_Outlines[Global.Players_Global_Array][0]);
+					Event Player.Player_Title_And_Outline = Array(Global.Titles_And_Outlines[Global.Players_Global_Array][0],
+						Global.Titles_And_Outlines[Global.Players_Global_Array][1], Global.Titles_And_Outlines[Global.Players_Global_Array][2],
+						Global.Titles_And_Outlines[Global.Players_Global_Array][3]);
+					Event Player.GivenTitle = True;
+					Start Rule(Give_Custom_Nameplate, Do Nothing);
+				End;
+			End;
+		End;
+	}
+}
+
+rule("Title List")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Wait(0.100, Ignore Condition);
+		Global.Titles_And_Outlines = Array(Array(Custom String("Siegreich"), Array(Custom String("{1} Just Siegy {1}{0}", Global.BaseLine,
+			Ability Icon String(Hero(Ramattra), Button(Ultimate)))), Custom String("Rainbow")), Array(Custom String("Okami39"), Array(
+			Custom String("♥ Oka ♥{0}", Global.BaseLine)), Custom String("Rainbow")), Array(Custom String("Hilletcat"), Array(
+			Custom String("Cat{0}", Global.BaseLine)), Custom String("Blue")), Array(Custom String("winseq"), Array(Custom String(
+			"Sugar honey ice & tea{0}", Global.BaseLine)), Custom String("Rainbow")), Array(Custom String("UwU"), Array(Custom String(
+			"♥ Goth Mommy ♥{0}", Global.BaseLine)), Custom String("Rainbow")), Array(Custom String("Purpzuki"), Array(Custom String(
+			"♡ Shimada Simp ♡{0}", Global.BaseLine)), Custom String("Rainbow")), Array(Custom String("binghus"), Array(Custom String(
+			"bingus lover :P{0}", Global.BaseLine)), Custom String("Rainbow")), Array(Custom String("iipastel"), Array(Custom String(
+			"{0} kris & evers bunny {0}{1}", Ability Icon String(Hero(D.Va), Button(Ultimate)), Global.BaseLine)), Custom String(
+			"Rainbow")), Array(Custom String("Roughly3Ants"), Array(Custom String("The Transformer{0}", Global.BaseLine)), Custom String(
+			"Rainbow")), Array(Custom String("RiverHare"), Array(Custom String("ツ Zenyatta Lover ツ{0}", Global.BaseLine)), Custom String(
+			"Rainbow")), Array(Custom String("CremeKitsune"), Array(Custom String("O5-1{0}", Global.BaseLine)), Custom String("Rainbow")),
+			Array(Custom String("Thanosaurus"), Array(Custom String("♡ DOLLAR STORE GENJI ♡{0}", Global.BaseLine)), Custom String(
+			"Rainbow")), Array(Custom String("Gecko"), Array(Custom String("{1}Gecko{1}{0}", Global.BaseLine, Ability Icon String(Hero(
+			Lúcio), Button(Ultimate)))), Custom String("Rainbow")), Array(Custom String("Xenothyne"), Array(Custom String(
+			"{1}Save a horse, ride a cowboy{1}{0}", Global.BaseLine, Ability Icon String(Hero(Cassidy), Button(Ultimate)))), Custom String(
+			"Rainbow")), Array(Custom String("Amxthyst"), Array(Custom String("{1}Overwatch addict{1}{0}", Global.BaseLine,
+			Ability Icon String(Hero(Illari), Button(Ultimate)))), Custom String("Rainbow")), Array(Custom String("Unicorn"), Array(
+			Custom String("{1}King of the Brats{1}{0}", Global.BaseLine, Ability Icon String(Hero(Sombra), Button(Ultimate)))),
+			Custom String("Rainbow")), Array(Custom String("Tweeti"), Array(Custom String("#1 Mercy Pocket{0}", Global.BaseLine)),
+			Custom String("Rainbow")), Array(Custom String("Profanity"), Array(Custom String("Pretty Boy{0}", Global.BaseLine)),
+			Custom String("Rainbow")), Array(Custom String("Arcanine"), Array(Custom String("Rendonutt{0}", Global.BaseLine)),
+			Custom String("Rainbow")), Array(Custom String("Cosmic"), Array(Custom String("{1}The Wanderer{1}{0}", Global.BaseLine,
+			Ability Icon String(Hero(Reaper), Button(Ultimate)))), Custom String("Rainbow")), Array(Custom String("Konadere"), Array(
+			Custom String("♥ Silly Little Guy ♥{0}", Global.BaseLine)), Custom String("Rainbow")), Array(Custom String("MedicAnxiety"),
+			Array(Custom String("Tortured{0}", Global.BaseLine)), Custom String("Custom"), Custom Color(243, 58, 106, 255)), Array(
+			Custom String("Lililah"), Array(Custom String("Babygorl :3{0}", Global.BaseLine)), Custom String("Rainbow")), Array(
+			Custom String("EverrMoree"), Array(Custom String("{1} Diamond Hoe {1}{0}", Global.BaseLine, Icon String(Diamond))),
+			Custom String("Rainbow")), Array(Custom String("puzeeater"), Array(Custom String("Lesbian Jesus{0}", Global.BaseLine)),
+			Custom String("Rainbow")), Array(Custom String("Blxe"), Array(Custom String("{1}B1tch not a Bully{1}{0}", Global.BaseLine,
+			Ability Icon String(Hero(Illari), Button(Ultimate)))), Custom String("Rainbow")), Array(Custom String("meowluke"), Array(
+			Custom String("Headpats{0}", Global.BaseLine)), Custom String("Rainbow")), Array(Custom String("ChocoLatte"), Array(
+			Custom String("Quiet Sea Creature{0}", Global.BaseLine)), Custom String("Rainbow")), Array(Custom String("SweetieSweet"),
+			Array(Custom String("Torturer{0}", Global.BaseLine)), Custom String("Custom"), Custom Color(243, 58, 106, 255)), Array(
+			Custom String("FrencĤǨnighŦ"), Array(Custom String("Sym's Tamed Warrior{0}", Global.BaseLine)), Custom String("Rainbow")),
+			Array(Custom String("kris"), Array(Custom String("{0} pastels mommy {0}{1}", Ability Icon String(Hero(Tracer), Button(
+			Ultimate)), Global.BaseLine)), Custom String("Rainbow")), Array(Custom String("notanimegirl"), Array(Custom String(
+			"{1} Lulussy {1}{0}", Global.BaseLine, Ability Icon String(Hero(Tracer), Button(Ultimate)))), Custom String("Rainbow")), Array(
+			Custom String("ÄGóòdGïrł"), Array(Custom String("{1}That's True{1} {0}", Global.BaseLine, Icon String(Arrow: Down))),
+			Custom String("Rainbow")), Array(Custom String("niya"), Array(Custom String("{1} delulu {1}{0}", Global.BaseLine,
+			Ability Icon String(Hero(Kiriko), Button(Ultimate)))), Custom String("Rainbow")));
+	}
+}
+
+rule("<SUBROUTINE> Assemble Titles")
+{
+	event
+	{
+		Subroutine;
+		Give_Custom_Nameplate;
+	}
+
+	actions
+	{
+		If(Event Player.Player_Title_And_Outline[2] == Custom String("Rainbow"));
+			Create In-World Text(All Players(All Teams), Random Value In Array(Event Player.Player_Title_And_Outline[1]), Event Player, 0.980,
+				Clip Against Surfaces, Visible To Position String and Color, Global.Rainbow_Color, Default Visibility);
+		Else If(Event Player.Player_Title_And_Outline[2] == Custom String("Custom"));
+			Create In-World Text(All Players(All Teams), Random Value In Array(Event Player.Player_Title_And_Outline[1]), Event Player, 0.980,
+				Clip Against Surfaces, Visible To Position and Color, Random Value In Array(Event Player.Player_Title_And_Outline[3]),
+				Default Visibility);
+		Else If(Event Player.Player_Title_And_Outline[2] == Custom String("Random"));
+			Create In-World Text(All Players(All Teams), Custom String("{2}{0}{2}{1}", Global.TitleNameA, Global.BaseLine, Ability Icon String(
+				Hero Of(Event Player), Button(Ultimate))), Event Player, 0.980, Clip Against Surfaces, Visible To Position String and Color,
+				Global.Rainbow_Color, Default Visibility);
+		End;
+	}
+}
+
+rule("Dynamic_Color")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		"Green => Red"
+		While(Global.Red < 255);
+			Global.Red += 5;
+			Global.Rainbow_Color = Custom Color(Global.Red, Global.Green, Global.Blue, 255);
+			Wait(0.150, Ignore Condition);
+		End;
+		While(Global.Green > 0);
+			Global.Green -= 5;
+			Global.Rainbow_Color = Custom Color(Global.Red, Global.Green, Global.Blue, 255);
+			Wait(0.150, Ignore Condition);
+		End;
+		"Red => Blue"
+		While(Global.Blue < 255);
+			Global.Blue += 5;
+			Global.Rainbow_Color = Custom Color(Global.Red, Global.Green, Global.Blue, 255);
+			Wait(0.150, Ignore Condition);
+		End;
+		While(Global.Red > 0);
+			Global.Red -= 5;
+			Global.Rainbow_Color = Custom Color(Global.Red, Global.Green, Global.Blue, 255);
+			Wait(0.150, Ignore Condition);
+		End;
+		"Blue => Green"
+		While(Global.Green < 255);
+			Global.Green += 5;
+			Global.Rainbow_Color = Custom Color(Global.Red, Global.Green, Global.Blue, 255);
+			Wait(0.150, Ignore Condition);
+		End;
+		While(Global.Blue > 0);
+			Global.Blue -= 5;
+			Global.Rainbow_Color = Custom Color(Global.Red, Global.Green, Global.Blue, 255);
+			Wait(0.150, Ignore Condition);
+		End;
+		Loop;
+	}
+}
+
+disabled rule("» [ACTIVITIES] «")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Backrooms Brute")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ultimate)) == True;
+		Event Player.AdminSelection == 7;
+		(Event Player == Host Player || Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player)
+			== Current Array Element) || Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player)
+			== Current Array Element)) == True;
+		Event Player.InAMenu == 0;
+		Event Player.Safe == 1;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		(Player Closest To Reticle(Event Player, All Teams).noClipFlags[1] == False) == True;
+	}
+
+	actions
+	{
+		Event Player.TargetPlayer = Player Closest To Reticle(Event Player, All Teams);
+		Wait(1, Abort When False);
+		Set Gravity(Event Player.TargetPlayer, 0);
+		Disable Movement Collision With Environment(Event Player.TargetPlayer, True);
+		Set Status(Event Player.TargetPlayer, Event Player, Rooted, 9999);
+		Apply Impulse(Event Player.TargetPlayer, Vector(0, -200, 0), 1, To World, Cancel Contrary Motion);
+		Small Message(Event Player, Custom String("    Sending {0}...", Event Player.TargetPlayer));
+		Big Message(All Players(All Teams), Custom String("{0} is noclipping to the backrooms.", Event Player.TargetPlayer));
+		Wait(2, Ignore Condition);
+		Play Effect(Event Player, Good Pickup Effect, Color(Green), Global.CameraPositions[Event Player.M_Is_Crouching], 1);
+		Play Effect(Event Player, Buff Impact Sound, Color(White), Event Player, 55);
+		Set Gravity(Event Player.TargetPlayer, 100);
+		Clear Status(Event Player.TargetPlayer, Rooted);
+		Teleport(Event Player.TargetPlayer, Vector(0, -1000, 0));
+		Wait(0.100, Ignore Condition);
+		Enable Movement Collision With Environment(Event Player.TargetPlayer);
+		Event Player.TargetPlayer = Null;
+	}
+}
+
+rule("Send Love")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ultimate)) == True;
+		Event Player.AdminSelection == 5;
+		(Event Player == Host Player || Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player)
+			== Current Array Element) || Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player)
+			== Current Array Element)) == True;
+		Event Player.InAMenu == 0;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+	}
+
+	actions
+	{
+		Small Message(Event Player, Custom String("    Message sent to {0}.", Player Closest To Reticle(Event Player, All Teams)));
+		Big Message(Player Closest To Reticle(Event Player, All Teams), Custom String("You are loved, never forget that {0}!",
+			Player Closest To Reticle(Event Player, All Teams)));
+		Wait(2.500, Ignore Condition);
+	}
+}
+
+rule("BRAZlL")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ultimate)) == True;
+		Event Player.AdminSelection == 6;
+		(Event Player == Host Player || Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player)
+			== Current Array Element) || Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player)
+			== Current Array Element)) == True;
+		Event Player.InAMenu == 0;
+		Event Player.Safe == 1;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		(Player Closest To Reticle(Event Player, All Teams).noClipFlags[1] == False) == True;
+	}
+
+	actions
+	{
+		Small Message(Player Closest To Reticle(Event Player, All Teams), Custom String("    Ready to fly? ;)"));
+		Wait(0.250, Abort When False);
+		Event Player.TargetPlayer = Player Closest To Reticle(Event Player, All Teams);
+		Play Effect(All Players(All Teams), Debuff Impact Sound, Color(White), Event Player.TargetPlayer, 50);
+		Big Message(All Players(All Teams), Custom String("{0} was sent to brazil.", Event Player.TargetPlayer));
+		Apply Impulse(Event Player.TargetPlayer, Vector(0, 10000, 0), 70, To World, Cancel Contrary Motion);
+		Disable Movement Collision With Environment(Event Player.TargetPlayer, False);
+		Wait(1.750, Ignore Condition);
+		Play Effect(All Players(All Teams), Good Explosion, Color(Red), Event Player.TargetPlayer, 25);
+		Wait(0.250, Ignore Condition);
+		Teleport(Event Player.TargetPlayer, Vector(0, -1000, 0));
+		Enable Movement Collision With Environment(Event Player.TargetPlayer);
+		Event Player.TargetPlayer = Null;
+	}
+}
+
+rule("Target Chosen")
+{
+	event
+	{
+		Subroutine;
+		GravPick;
+	}
+
+	actions
+	{
+		If(Event Player.TargetPlayer._NoClip == False);
+			Event Player.GravGunVariables[0] = True;
+			Event Player.GravGunVariables[1] = Event Player.TargetPlayer;
+			Event Player.GravGunVariables[1].GravGunVariables[2] = True;
+	}
+}
+
+rule("Grav Gun Effect")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Alive(Event Player) == True;
+		Has Spawned(Event Player) == True;
+		Event Player.GravGunVariables[0] == True;
+	}
+
+	actions
+	{
+		Set Environment Credit Player(Event Player.GravGunVariables[1], Event Player);
+		Set Gravity(Event Player.GravGunVariables[1], 0);
+		Wait(0.100, Ignore Condition);
+		Start Forcing Player Position(Event Player.GravGunVariables[1], Eye Position(Event Player) + Facing Direction Of(Event Player)
+			* First Of(Event Player.WorkshopConfig), True);
+	}
+}
+
+rule("Release (Reload)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Alive(Event Player) == True;
+		Has Spawned(Event Player) == True;
+		Is Button Held(Event Player, Button(Reload)) == True;
+		Event Player.GravGunVariables[0] == True;
+	}
+
+	actions
+	{
+		Event Player.GravGunVariables[1].GravGunVariables[2] = False;
+		Stop Forcing Player Position(Event Player.GravGunVariables[1]);
+		Set Gravity(Event Player.GravGunVariables[1], 100);
+		Stop Accelerating(Event Player.GravGunVariables[1]);
+		Wait(0.100, Ignore Condition);
+		Event Player.GravGunVariables[0] = False;
+		Event Player.GravGunVariables[1] = Null;
+		Destroy Icon(Event Player.GravGunVariables[3]);
+		Event Player.GravGunVariables[3] = Null;
+		Event Player.TargetPlayer = Null;
+	}
+}
+
+rule("Release (Target Dead)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+		First Of(Event Player.GravGunVariables) == True;
+		Is Dead(Event Player.GravGunVariables[1]) == True;
+	}
+
+	actions
+	{
+		Event Player.GravGunVariables[1].GravGunVariables[2] = False;
+		Stop Forcing Player Position(Event Player.GravGunVariables[1]);
+		Set Gravity(Event Player.GravGunVariables[1], 100);
+		Stop Accelerating(Event Player.GravGunVariables[1]);
+		Event Player.GravGunVariables[0] = False;
+		Event Player.GravGunVariables[1] = Null;
+		Destroy Icon(Event Player.GravGunVariables[3]);
+		Event Player.GravGunVariables[3] = Null;
+		Event Player.TargetPlayer = Null;
+	}
+}
+
+rule("Release (Dead)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+		Event Player.GravGunVariables[0] == True;
+		Is Dead(Event Player) == True;
+		Event Player.Safe == 1;
+	}
+
+	actions
+	{
+		Event Player.GravGunVariables[1].GravGunVariables[2] = False;
+		Stop Forcing Player Position(Event Player.GravGunVariables[1]);
+		Set Gravity(Event Player.GravGunVariables[1], 100);
+		Stop Accelerating(Event Player.GravGunVariables[1]);
+		Event Player.GravGunVariables[0] = False;
+		Event Player.GravGunVariables[1] = Null;
+		Destroy Icon(Event Player.GravGunVariables[3]);
+		Event Player.GravGunVariables[3] = Null;
+		Event Player.TargetPlayer = Null;
+	}
+}
+
+rule("Launch")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Alive(Event Player) == True;
+		Has Spawned(Event Player) == True;
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+		Event Player.GravGunVariables[0] == True;
+		Event Player.Safe == 1;
+	}
+
+	actions
+	{
+		Damage(Event Player.GravGunVariables[1], Event Player, Max Health(Event Player.GravGunVariables[1]) / 8);
+		Event Player.GravGunVariables[1].GravGunVariables[2] = False;
+		Stop Forcing Player Position(Event Player.GravGunVariables[1]);
+		Set Gravity(Event Player.GravGunVariables[1], 100);
+		Stop Accelerating(Event Player.GravGunVariables[1]);
+		Apply Impulse(Event Player.GravGunVariables[1], Facing Direction Of(Event Player), Event Player.WorkshopConfig[1], To World,
+			Cancel Contrary Motion);
+		Event Player.GravGunVariables[0] = False;
+		Event Player.GravGunVariables[1] = Null;
+		Event Player.GravGunVariables[3] = Null;
+		Event Player.TargetPlayer = Null;
+	}
+}
+
+rule("Left (Release)")
+{
+	event
+	{
+		Player Left Match;
+		All;
+		All;
+	}
+
+	actions
+	{
+		Event Player.GravGunVariables[1].GravGunVariables[2] = False;
+		Stop Forcing Player Position(Event Player.GravGunVariables[1]);
+		Set Gravity(Event Player.GravGunVariables[1], 100);
+		Stop Accelerating(Event Player.GravGunVariables[1]);
+		Event Player.GravGunVariables[0] = False;
+		Event Player.GravGunVariables[1] = Null;
+		Event Player.GravGunVariables[3] = Null;
+		Event Player.TargetPlayer = Null;
+	}
+}
+
+rule("Gravity Gun")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player) == Current Array Element) || Is True For Any(
+			Global.MeasureSystemAlpha, Custom String("{0}", Event Player) == Current Array Element)) == True;
+		Is Button Held(Event Player, Button(Ultimate)) == True;
+		Event Player.AdminSelection == 8;
+		Event Player.InAMenu == 0;
+		Event Player.Safe == 1;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		(Player Closest To Reticle(Event Player, All Teams).noClipFlags[1] == False) == True;
+	}
+
+	actions
+	{
+		Event Player.TargetPlayer = Player Closest To Reticle(Event Player, All Teams);
+		Call Subroutine(GravPick);
+	}
+}
+
+rule("Player Attachment")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Is Button Held(Event Player, Button(Ultimate)) || Is Button Held(Event Player, Button(Melee)) || Is Button Held(Event Player,
+			Button(Reload))) == True;
+		Event Player.AdminSelection == 9;
+		(Event Player == Host Player || Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player)
+			== Current Array Element) || Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player)
+			== Current Array Element)) == True;
+		Event Player.InAMenu == 0;
+		Event Player.Safe == 1;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		(Player Closest To Reticle(Event Player, All Teams).noClipFlags[1] == False) == True;
+	}
+
+	actions
+	{
+		If(Is Button Held(Event Player, Button(Ultimate)) == True && !(Is Button Held(Event Player, Button(Melee)) == True));
+			Attach Players(Event Player, Player Closest To Reticle(Event Player, All Teams), Vector(0, 2, 0));
+		Else If(Is Button Held(Event Player, Button(Melee)) == True && !(Is Button Held(Event Player, Button(Ultimate)) == True));
+			Attach Players(Player Closest To Reticle(Event Player, All Teams), Event Player, Vector(0, 2, 0));
+		Else If(Is Button Held(Event Player, Button(Reload)) == True);
+			Detach Players(Event Player);
+			Detach Players(Player Closest To Reticle(Event Player, All Teams));
+	}
+}
+
+disabled rule("» [EXTRAS] «")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("AntiCrash Enabled")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.AntiCrash == False;
+		Server Load > 200;
+	}
+
+	actions
+	{
+		Wait(0.500, Abort When False);
+		Set Slow Motion(10);
+		Global.AntiCrash = True;
+	}
+}
+
+rule("AntiCrash Disabled")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.AntiCrash == True;
+		Server Load < 100;
+	}
+
+	actions
+	{
+		Set Slow Motion(100);
+		Global.AntiCrash = False;
+	}
+}
+
+rule("Selector_ON")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		(Event Player == Host Player || Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player)
+			== Current Array Element) || Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player)
+			== Current Array Element)) == True;
+		Event Player.InAMenu == 0;
+		Event Player.Safe == 1;
+	}
+
+	actions
+	{
+		Create Effect(Event Player, Bad Aura, Color(Yellow), Player Closest To Reticle(Event Player, All Teams), 1,
+			Visible To Position and Radius);
+		Event Player.Effect = Last Created Entity;
+		Create In-World Text(Event Player, Custom String("{0} {1} {0}{2}{2}{2}", Icon String(Arrow: Down), Player Closest To Reticle(
+			Event Player, All Teams), Global.BaseLine), Player Closest To Reticle(Event Player, All Teams), 1, Do Not Clip,
+			Visible To Position and String, Color(Orange), Default Visibility);
+		Event Player.Player = Last Text ID;
+		Disallow Button(Event Player, Button(Primary Fire));
+		Disallow Button(Event Player, Button(Secondary Fire));
+		Disallow Button(Event Player, Button(Ability 1));
+		Disallow Button(Event Player, Button(Ability 2));
+		Disallow Button(Event Player, Button(Ultimate));
+		Disallow Button(Event Player, Button(Interact));
+		Disallow Button(Event Player, Button(Jump));
+		Disallow Button(Event Player, Button(Melee));
+	}
+}
+
+rule("Selector_OFF")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Crouch)) == False;
+		(Event Player == Host Player || Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player)
+			== Current Array Element) || Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player)
+			== Current Array Element)) == True;
+	}
+
+	actions
+	{
+		Destroy Effect(Event Player.Effect);
+		Event Player.Effect = Null;
+		Destroy In-World Text(Event Player.Player);
+		Event Player.Player = Null;
+		Allow Button(Event Player, Button(Primary Fire));
+		Allow Button(Event Player, Button(Secondary Fire));
+		Allow Button(Event Player, Button(Ability 1));
+		Allow Button(Event Player, Button(Ability 2));
+		Allow Button(Event Player, Button(Ultimate));
+		Allow Button(Event Player, Button(Interact));
+		Allow Button(Event Player, Button(Jump));
+		Allow Button(Event Player, Button(Melee));
+	}
+}
+
+rule("Base Line")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Global.BaseLine = Custom String("\n");
+	}
+}
+
+disabled rule("Size")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Create HUD Text(All Players(All Teams), Null, Custom String("Server Average Load: {1}", Null, Server Load Average), Null, Top, 0,
+			Color(White), Color(Green), Color(White), Visible To and String, Default Visibility);
+		Create HUD Text(All Players(All Teams), Server Load Average > 200 ? Custom String("ANTI-CRASH ENABLED") : Custom String(""), Null,
+			Null, Top, 0, Color(Red), Color(Red), Color(White), Visible To and String, Default Visibility);
+	}
+}
+
+disabled rule("(TEST)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Dummy Bot(Event Player) == True;
+		Hero Of(Event Player) == Hero(Ana);
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Event Player.LookingFor = 0;
+		Event Player.Moderator = 2;
+		Event Player.Title = 59;
+		Event Player.Sexuality = 3;
+		Event Player.Age = 24;
+		Event Player.Status = 1;
+		Wait(2, Ignore Condition);
+		Event Player.ProfileCompleteBool = True;
+		Modify Player Variable(Event Player, AttemptedToMatchWith, Append To Array, All Players(All Teams));
+	}
+}
+
+rule("[INITIALIZE] Host System")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.HostTextMenues == 0;
+		(Host Player == Event Player) == True;
+		!Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player) == Current Array Element) == True;
+		!Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player) == Current Array Element) == True;
+	}
+
+	actions
+	{
+		If(Host Player == Event Player);
+			Event Player.HostTextMenues = 1;
+			Create HUD Text(Filtered Array(Host Player, Host Player.InAMenu == 0), Null, Custom String("♡ ━━━━━ Player: {0} {2} ━━━━━ ♡",
+				Player Closest To Reticle(Host Player, All Teams), Null, Hero Icon String(Hero Of(Player Closest To Reticle(Host Player,
+				All Teams)))), Null, Top, 2, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Filtered Array(Host Player, Host Player.InAMenu == 0), Null, Custom String(
+				"Hold CROUCH + <{0} or {1}> to scroll.\r\n{2}", Input Binding String(Button(Primary Fire)), Input Binding String(Button(
+				Secondary Fire)), Global.DataControl[Event Player.AdminSelection]), Null, Top, 3, Color(Red), Custom Color(135, 206, 250, 255),
+				Color(Red), Visible To and String, Default Visibility);
+			Create HUD Text(Filtered Array(Host Player, Host Player.InAMenu == 0), Null, Null, Custom String("<{1} {0} {2}>",
+				Global.AdminSelections[Host Player.AdminSelection], Input Binding String(Button(Primary Fire)), Input Binding String(Button(
+				Secondary Fire))), Top, 5, Color(Red), Color(White), Custom Color(176, 224, 230, 255), Visible To and String,
+				Default Visibility);
+		End;
+	}
+}
+
+rule("[INITIALIZE] Host 2 System")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		(Is True For Any(Global.MeasureSystemAlpha, Custom String("{0}", Event Player) == Current Array Element)
+			== True || Is True For Any(Global.MeasureSystemA, Custom String("{0}", Event Player) == Current Array Element)) == True;
+	}
+
+	actions
+	{
+		Create HUD Text(Filtered Array(Event Player, Event Player.InAMenu == 0), Null, Custom String("◇─◇─◇ Player: {0} {2} ◇─◇─◇",
+			Player Closest To Reticle(Event Player, All Teams), Null, Hero Icon String(Hero Of(Player Closest To Reticle(Event Player,
+			All Teams)))), Null, Top, 2, Color(Red), Color(White), Color(White), Visible To and String, Default Visibility);
+		Create HUD Text(Filtered Array(Event Player, Event Player.InAMenu == 0), Null, Custom String(
+			"Hold CROUCH + <{0} or {1}> to scroll.\r\n{2}", Input Binding String(Button(Primary Fire)), Input Binding String(Button(
+			Secondary Fire)), Global.DataControl[Event Player.AdminSelection]), Null, Top, 3, Color(Red), Custom Color(135, 206, 250, 255),
+			Color(Red), Visible To and String, Default Visibility);
+		Create HUD Text(Filtered Array(Event Player, Event Player.InAMenu == 0), Null, Null, Custom String("<{1} {0} {2}>",
+			Global.AdminSelections[Event Player.AdminSelection], Input Binding String(Button(Primary Fire)), Input Binding String(Button(
+			Secondary Fire))), Top, 5, Color(Red), Color(White), Custom Color(176, 224, 230, 255), Visible To and String,
+			Default Visibility);
+	}
+}
